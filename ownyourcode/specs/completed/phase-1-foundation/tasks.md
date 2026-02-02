@@ -529,26 +529,26 @@
 
 ## Completion
 
-- [ ] Self-review: Does it match the spec?
-  - [ ] Two clients can connect ✓
-  - [ ] Users can create a room (generates unique ID) ✓
-  - [ ] Users can join an existing room using room ID ✓
-  - [ ] Joining non-existent room shows error ✓
-  - [ ] Notifications work (user-joined events) ✓
-  - [ ] Project structure correct (apps/ directory) ✓
-  - [ ] Server tracks active rooms ✓
-- [ ] Run /own:done for 6 Gates + code review + STAR story
+- [x] Self-review: Does it match the spec?
+  - [x] Two clients can connect ✓
+  - [x] Users can create a room (generates unique ID) ✓
+  - [x] Users can join an existing room using room ID ✓
+  - [x] Joining non-existent room shows error ✓
+  - [x] Notifications work (user-joined events) ✓
+  - [x] Project structure correct (apps/ directory) ✓
+  - [x] Server tracks active rooms ✓
+- [x] Run /own:done for 6 Gates + code review + STAR story (2026-02-02)
 - [ ] Run /own:retro to capture learnings
 
 ## Progress Tracking
 
-| Phase                 | Status      | Started | Completed |
-| --------------------- | ----------- | ------- | --------- |
-| Project Structure     | Not Started | -       | -         |
-| Server Setup          | Not Started | -       | -         |
-| Client Setup          | Not Started | -       | -         |
-| Room Management       | Not Started | -       | -         |
-| Integration & Testing | Not Started | -       | -         |
+| Phase                 | Status      | Started    | Completed  |
+| --------------------- | ----------- | ---------- | ---------- |
+| Project Structure     | Complete    | 2026-01-XX | 2026-01-XX |
+| Server Setup          | Complete    | 2026-01-XX | 2026-01-XX |
+| Client Setup          | Complete    | 2026-01-XX | 2026-01-XX |
+| Room Management       | Complete    | 2026-01-XX | 2026-01-XX |
+| Integration & Testing | Complete    | 2026-01-XX | 2026-02-02 |
 
 ---
 
