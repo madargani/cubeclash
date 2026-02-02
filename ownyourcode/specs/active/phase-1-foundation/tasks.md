@@ -238,7 +238,7 @@
 
 ### 4a: Server Room State
 
-- [ ] Create `apps/server/src/types.ts` with Room interface
+- [x] Create `apps/server/src/types.ts` with Room interface
   ```typescript
   export interface Room {
     id: string;
@@ -248,7 +248,7 @@
   }
   ```
   └── Depends on: Server setup complete
-- [ ] Create `apps/server/src/rooms.ts` with room management functions
+- [x] Create `apps/server/src/rooms.ts` with room management functions
 
   ```typescript
   import { Room } from "./types.js";
@@ -295,7 +295,7 @@
 
   └── Depends on: types.ts created
 
-- [ ] Update `apps/server/src/index.ts` with room events
+- [x] Update `apps/server/src/index.ts` with room events
 
   ```typescript
   import { createRoom, getRoom, roomExists, addParticipant } from "./rooms.js";
@@ -340,7 +340,7 @@
 
 ### 4b: Client UI Updates
 
-- [ ] Update `apps/client/src/App.tsx` with Create/Join buttons
+- [x] Update `apps/client/src/App.tsx` with Create/Join buttons
 
   ```tsx
   import { useEffect, useState } from "react";
@@ -464,22 +464,22 @@
 
   └── Depends on: Server room events implemented
 
-- [ ] Add styling in `apps/client/src/App.css` for room UI
+- [x] Add styling in `apps/client/src/App.css` for room UI
       └── Depends on: App.tsx updated
 
 ### 4c: Testing
 
-- [ ] Test room creation:
+- [x] Test room creation:
   1. Click "Create Room" → Should show room ID
   2. Room ID should be 6 characters (e.g., "ABC123")
   3. User should see "You are the host"
      └── Depends on: All above complete
-- [ ] Test room joining:
+- [x] Test room joining:
   1. Create room in Tab 1
   2. Enter room ID in Tab 2, click Join
   3. Both should see 2 participants
      └── Depends on: Room creation works
-- [ ] Test room not found:
+- [x] Test room not found:
   1. Try to join "NONEXISTENT"
   2. Should see error message
      └── Depends on: Room joining works
