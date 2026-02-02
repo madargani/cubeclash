@@ -5,7 +5,11 @@ import { addMember, createRoom, getRoom, roomExists } from "./rooms.js";
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, {});
+const io = new Server(httpServer, {
+  cors: {
+    origin: [process.env.FRONTEND_ORIGIN || "http://localhost:5173"],
+  },
+});
 
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);

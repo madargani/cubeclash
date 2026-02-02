@@ -62,11 +62,12 @@ function App() {
   return (
     <div className="app">
       <h1>CubeClash</h1>
+      <p>{connected ? "Connected" : "Disconnected"}</p>
       {joined && <p>Room {roomId}</p>}
       {isHost && <p>You are the host</p>}
       <ol>
         {members.map((member, index) => (
-          <li>
+          <li key={index}>
             {index}: {member}
           </li>
         ))}

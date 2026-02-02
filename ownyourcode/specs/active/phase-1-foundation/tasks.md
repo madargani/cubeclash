@@ -497,30 +497,30 @@
 
 > Make sure everything works together.
 
-- [ ] Test root dev script: `npm run dev`
+- [x] Test root dev script: `npm run dev`
   - Should start both client and server
     └── Depends on: All setup complete
-- [ ] Test room creation flow:
+- [x] Test room creation flow:
   1. Open http://localhost:5173 in Tab 1
   2. Click "Create Room"
   3. Should see 6-char room ID (e.g., "ABC123")
   4. Server logs should show "Room created"
      └── Depends on: Dev script works
-- [ ] Test room joining flow:
+- [x] Test room joining flow:
   1. Open http://localhost:5173 in Tab 2
   2. Enter room ID from Tab 1
   3. Click "Join Room"
   4. Tab 1 should see "user joined" notification
   5. Both should show 2 participants
      └── Depends on: Room creation works
-- [ ] Test error handling:
+- [x] Test error handling:
   1. Try to join non-existent room (e.g., "ZZZZZZ")
   2. Should see "Room not found" error
   3. Error should clear on successful join
      └── Depends on: Room joining works
-- [ ] Verify server logs show all events
+- [x] Verify server logs show all events
       └── Depends on: Manual tests complete
-- [ ] Check CORS working (no browser console errors)
+- [x] Check CORS working (no browser console errors)
       └── Depends on: Manual tests complete
 
 **Checkpoint:** Full integration test passes.
