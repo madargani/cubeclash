@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import "./App.css";
 import { socket } from "./socket";
 
 function App() {
@@ -61,7 +60,7 @@ function App() {
 
   return (
     <div className="app">
-      <h1>CubeClash</h1>
+      <h1 className="text-xl">CubeClash</h1>
       <p>{connected ? "Connected" : "Disconnected"}</p>
       {joined && <p>Room {roomId}</p>}
       {isHost && <p>You are the host</p>}
