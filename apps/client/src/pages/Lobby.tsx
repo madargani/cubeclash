@@ -1,5 +1,5 @@
-import MemberList from "../components/MemberList";
-import Settings from "../components/Settings";
+import MemberList from "@/components/MemberList";
+import Settings from "@/components/Settings";
 
 function Lobby() {
   return (

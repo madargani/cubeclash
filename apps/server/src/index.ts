@@ -1,11 +1,28 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { addMember, createRoom, getRoom, roomExists } from "./rooms.js";
+import {
+  addMember,
+  createRoom,
+  deleteRoom,
+  getRoom,
+  removeMember,
+} from "./rooms.js";
+import type {
+  ClientToServerEvents,
+  InterServerEvents,
+  ServerToClientEvents,
+  SocketData,
+} from "@cubeclash/types";
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
+const io = new Server<
+  ClientToServerEvents,
+  ServerToClientEvents,
+  InterServerEvents,
+  SocketData
+>(httpServer, {
   cors: {
     origin: [process.env.FRONTEND_ORIGIN || "http://localhost:5173"],
   },
@@ -15,42 +32,58 @@ io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
   // User requests to create room
-  socket.on("room:create", () => {
-    const room = createRoom(socket.id);
+  socket.on("create_room", (nickname, callback) => {
+    const room = createRoom(socket.id, nickname);
 
     // Add host socket to room
     socket.join(room.id);
 
-    // Inform host that room was created and give room id
-    socket.emit("room:created", room.id);
+    // Acknowledge room creation
+    callback(room.id);
 
     console.log(`User ${socket.id} created room ${room.id}`);
   });
 
   // User requests to join room
-  socket.on("room:join", (roomId) => {
+  socket.on("join_room", (nickname, roomId, callback) => {
     const room = getRoom(roomId);
 
-    // If room doesn't exist inform user
+    // Return null if room doesn't exist
     if (!room) {
-      socket.emit("room:error", "Room doesn't exist");
+      callback(null);
       return;
     }
 
+    // add member
     socket.join(roomId);
-    addMember(roomId, socket.id);
+    addMember(roomId, socket.id, nickname);
+
+    // Acknowledge successful join
+    const members = room.members.map((member) => member.nickname);
+    callback(members);
 
     // Inform group that new user joined
-    io.to(roomId).emit("user:joined", socket.id);
-
-    socket.emit("room:joined", roomId, room.members);
+    io.to(roomId).emit("member_joined", socket.id, nickname);
 
     console.log(`User ${socket.id} joined room ${roomId}`);
   });
 
   socket.on("disconnect", () => {
-    // TODO: Delete room
-    console.log(`User disconnected: ${socket.id}`);
+    for (const roomId in socket.rooms) {
+      // check if host of room
+      if (getRoom(roomId)?.hostId == socket.id) {
+        deleteRoom(roomId);
+
+        // disconnect all members of room
+        io.in(roomId).disconnectSockets(true);
+
+        console.log(`Room ${roomId} deleted`);
+      } else {
+        removeMember(roomId, socket.id);
+      }
+    }
+
+    console.log(`User ${socket.id} disconnected`);
   });
 });
 

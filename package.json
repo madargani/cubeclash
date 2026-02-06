@@ -2,7 +2,7 @@
   "name": "cubeclash",
   "private": true,
   "type": "module",
-  "workspaces": ["apps/*"],
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "concurrently \"npm run dev -w client\" \"npm run dev -w server\""
   },
