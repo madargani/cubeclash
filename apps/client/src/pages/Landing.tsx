@@ -34,14 +34,14 @@ function Landing({}: LandingProps) {
           return;
         }
         setMembers(members);
-        navigate("/lobby");
+        navigate("/room");
       });
     } else {
       // Create Room
       socket.emit("create_room", nickname, (roomId) => {
         setRoomId(roomId);
         setMembers([nickname]);
-        navigate("/lobby");
+        navigate("/room");
       });
     }
   };

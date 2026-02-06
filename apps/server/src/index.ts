@@ -63,9 +63,26 @@ io.on("connection", (socket) => {
     callback(members);
 
     // Inform group that new user joined
-    io.to(roomId).emit("member_joined", nickname);
+    socket.to(roomId).emit("member_joined", nickname);
 
     console.log(`User ${socket.id} joined room ${roomId}`);
+  });
+
+  // Host starts game
+  socket.on("start_game", (roomId) => {
+    const room = getRoom(roomId);
+
+    if (!room)
+      // Room doesn't exist
+      return;
+
+    if (room.hostId != socket.id)
+      // Not host of game
+      return;
+
+    io.to(roomId).emit("start_round", "R U R U R U");
+
+    console.log(`Room ${roomId} started game`);
   });
 
   socket.on("disconnect", () => {

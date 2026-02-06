@@ -2,6 +2,7 @@
 export interface ServerToClientEvents {
   member_joined: (nickname: string) => void;
   member_left: (nickname: string) => void;
+  start_round: (scramble: string) => void;
 }
 
 export interface ClientToServerEvents {
@@ -11,6 +12,7 @@ export interface ClientToServerEvents {
     roomId: string,
     callback: (members: string[] | null) => void,
   ) => void;
+  start_game: (roomId: string) => void;
 }
 
 export interface InterServerEvents {}

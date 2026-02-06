@@ -1,7 +1,15 @@
 import MemberList from "@/components/MemberList";
 import Settings from "@/components/Settings";
+import { useRoomId } from "@/hooks/useStore";
+import { socket } from "@/socket";
 
 function Lobby() {
+  const roomId = useRoomId();
+
+  const handleStart = () => {
+    socket.emit("start_game", roomId);
+  };
+
   return (
     <main className="h-screen p-4 flex flex-col gap-4 items-end">
       <div className="w-full flex flex-row gap-4 justify-center items-center">
@@ -12,7 +20,10 @@ function Lobby() {
         <MemberList />
         <Settings />
       </div>
-      <button className="btn btn-lg relative right-0 bg-primary text-primary-content">
+      <button
+        className="btn btn-lg relative right-0 bg-primary text-primary-content"
+        onClick={handleStart}
+      >
         Start
       </button>
     </main>

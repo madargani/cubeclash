@@ -6,7 +6,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { useGameActions } from "@/hooks/useStore";
 
 function App() {
-  const { addMember } = useGameActions();
+  const { addMember, setRoomState, setScramble } = useGameActions();
 
   useEffect(() => {
     // Someone joined room
@@ -14,8 +14,15 @@ function App() {
       addMember(nickname);
     });
 
+    // Start new round
+    socket.on("start_round", (scramble) => {
+      setRoomState("timer");
+      setScramble(scramble);
+    });
+
     return () => {
       socket.off("member_joined");
+      socket.off("start_round");
     };
   }, []);
 

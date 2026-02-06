@@ -6,12 +6,14 @@ interface GameState {
   roomId: string;
   members: string[];
   roomState: "lobby" | "timer" | "leaderBoard";
+  scramble: string;
   actions: {
     setNickname: (nickname: string) => void;
     setRoomId: (roomId: string) => void;
     setMembers: (members: string[]) => void;
     addMember: (nickname: string) => void;
     setRoomState: (roomState: "lobby" | "timer" | "leaderBoard") => void;
+    setScramble: (scramble: string) => void;
   };
 }
 
@@ -21,6 +23,7 @@ const useGameStore = create<GameState>()((set) => ({
   roomId: "",
   members: [],
   roomState: "lobby",
+  scramble: "",
   actions: {
     setNickname: (nickname) => set((_state) => ({ nickname: nickname })),
     setRoomId: (roomId) => set((_state) => ({ roomId: roomId })),
@@ -28,11 +31,16 @@ const useGameStore = create<GameState>()((set) => ({
     addMember: (nickname) =>
       set((state) => ({ members: [...state.members, nickname] })),
     setRoomState: (roomState) => set((_state) => ({ roomState: roomState })),
+    setScramble: (scramble) => set((_state) => ({ scramble: scramble })),
   },
 }));
 
 export function useNickname() {
   return useGameStore((state) => state.nickname);
+}
+
+export function useRoomId() {
+  return useGameStore((state) => state.roomId);
 }
 
 export function useMembers() {
@@ -41,6 +49,10 @@ export function useMembers() {
 
 export function useRoomState() {
   return useGameStore((state) => state.roomState);
+}
+
+export function useScramble() {
+  return useGameStore((state) => state.scramble);
 }
 
 export function useGameActions() {
