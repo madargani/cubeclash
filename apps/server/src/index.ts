@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
     callback(members);
 
     // Inform group that new user joined
-    io.to(roomId).emit("member_joined", socket.id, nickname);
+    io.to(roomId).emit("member_joined", nickname);
 
     console.log(`User ${socket.id} joined room ${roomId}`);
   });

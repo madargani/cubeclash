@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { socket } from "@/socket";
 import Landing from "@/pages/Landing";
-import Lobby from "@/pages/Lobby";
+import RoomContainer from "@/pages/RoomContainer";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { useGameActions } from "@/hooks/useStore";
 
@@ -24,7 +24,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path=":roomId?" element={<Landing />} />
-          <Route path="lobby" element={<Lobby />} />
+          <Route path="room" element={<RoomContainer />} />
         </Routes>
       </BrowserRouter>
     </div>
