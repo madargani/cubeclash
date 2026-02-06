@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { socket } from "./socket";
+import Landing from "./pages/Landing";
+import Lobby from "./pages/Lobby";
 
 function App() {
   const [connected, setConnected] = useState(socket.connected);
@@ -59,31 +61,9 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <h1 className="text-xl">CubeClash</h1>
-      <p>{connected ? "Connected" : "Disconnected"}</p>
-      {joined && <p>Room {roomId}</p>}
-      {isHost && <p>You are the host</p>}
-      <ol>
-        {members.map((member, index) => (
-          <li key={index}>
-            {index}: {member}
-          </li>
-        ))}
-      </ol>
-      <div>
-        <button onClick={handleCreateRoom}>Create Room</button>
-      </div>
-      <div>
-        <input
-          inputMode="text"
-          maxLength={8}
-          value={roomId}
-          onChange={(e) => setRoomId(e.target.value.toUpperCase())}
-        />
-        <button onClick={handleJoinRoom}>Join Room</button>
-      </div>
-      {error && <p>{error}</p>}
+    <div data-theme="forest">
+      {/* <Landing /> */}
+      <Lobby />
     </div>
   );
 }
