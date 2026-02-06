@@ -20,7 +20,7 @@ function App() {
   }, []);
 
   return (
-    <div data-theme="forest">
+    <div data-theme="forest" className="font-azeret-mono">
       <BrowserRouter>
         <Routes>
           <Route path=":roomId?" element={<Landing />} />
