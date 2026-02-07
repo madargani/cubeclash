@@ -14,6 +14,7 @@ import type {
   ServerToClientEvents,
   SocketData,
 } from "@cubeclash/types";
+import { generateScramble } from "./types/scramble.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -69,7 +70,7 @@ io.on("connection", (socket) => {
   });
 
   // Host starts game
-  socket.on("start_game", (roomId) => {
+  socket.on("start_game", async (roomId) => {
     const room = getRoom(roomId);
 
     if (!room)
@@ -80,7 +81,7 @@ io.on("connection", (socket) => {
       // Not host of game
       return;
 
-    io.to(roomId).emit("start_round", "R U R U R U");
+    io.to(roomId).emit("start_round", await generateScramble());
 
     console.log(`Room ${roomId} started game`);
   });

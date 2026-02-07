@@ -7,4 +7,6 @@ export interface Room {
   id: string;
   hostId: string;
   members: Member[];
+  round?: number;
+  results?: number[][];
 }

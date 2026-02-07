@@ -6,6 +6,7 @@
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
+    "cubing": "^0.63.0",
     "express": "^5.2.1",
     "socket.io": "^4.8.3"
   },

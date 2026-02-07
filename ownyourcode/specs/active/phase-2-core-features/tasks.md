@@ -47,23 +47,23 @@
 
 > Integrate cubing.js and distribute scrambles.
 
-- [ ] **Create server scramble.ts module**
+- [x] **Create server scramble.ts module**
   - Import `randomScrambleForEvent` from cubing
   - Export `generateScramble()` function
   - Handle 3x3x3 ("333") event code
     └── Depends on: cubing.js installed
 
-- [ ] **Extend Room with round state**
+- [x] **Extend Room with round state**
   - Add `currentScramble?: string` to Room
   - Add `roundState: "waiting" | "active" | "ended"`
     └── Depends on: scramble.ts created
 
-- [ ] **Create Race type and races.ts**
+- [x] **Create Race type and races.ts**
   - Define Race interface with scramble, results, state
   - Create races Map for tracking active races
     └── Depends on: Room extended
 
-- [ ] **Add round:start handler (server)**
+- [x] **Add round:start handler (server)**
   - Listen for `round:start` event
   - Generate scramble using cubing.js
   - Store in room, broadcast `scramble:new`
