@@ -1,6 +1,6 @@
 import MemberList from "@/components/MemberList";
 import Settings from "@/components/Settings";
-import { useRoomId } from "@/hooks/useStore";
+import { useRoomId } from "@/hooks/useRoomStore";
 import { socket } from "@/socket";
 
 function Lobby() {

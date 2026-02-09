@@ -1,13 +1,13 @@
 import type { ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router";
-import { useGameActions, useNickname } from "@/hooks/useStore";
+import { useRoomActions, useNickname } from "@/hooks/useRoomStore";
 import { socket } from "@/socket";
 
 interface LandingProps {}
 
 function Landing({}: LandingProps) {
   const nickname = useNickname();
-  const { setNickname, setMembers, setRoomId } = useGameActions();
+  const { setNickname, setMembers, setRoomId } = useRoomActions();
   const params = useParams();
 
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-interface GameState {
+interface RoomState {
   nickname: string;
   isHost: boolean;
   roomId: string;
@@ -17,7 +17,7 @@ interface GameState {
   };
 }
 
-const useGameStore = create<GameState>()((set) => ({
+const useRoomStore = create<RoomState>()((set) => ({
   nickname: "",
   isHost: false,
   roomId: "",
@@ -36,25 +36,25 @@ const useGameStore = create<GameState>()((set) => ({
 }));
 
 export function useNickname() {
-  return useGameStore((state) => state.nickname);
+  return useRoomStore((state) => state.nickname);
 }
 
 export function useRoomId() {
-  return useGameStore((state) => state.roomId);
+  return useRoomStore((state) => state.roomId);
 }
 
 export function useMembers() {
-  return useGameStore((state) => state.members);
+  return useRoomStore((state) => state.members);
 }
 
 export function useRoomState() {
-  return useGameStore((state) => state.roomState);
+  return useRoomStore((state) => state.roomState);
 }
 
 export function useScramble() {
-  return useGameStore((state) => state.scramble);
+  return useRoomStore((state) => state.scramble);
 }
 
-export function useGameActions() {
-  return useGameStore((state) => state.actions);
+export function useRoomActions() {
+  return useRoomStore((state) => state.actions);
 }

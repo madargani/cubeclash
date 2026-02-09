@@ -3,10 +3,10 @@ import { socket } from "@/socket";
 import Landing from "@/pages/Landing";
 import RoomContainer from "@/pages/RoomContainer";
 import { BrowserRouter, Route, Routes } from "react-router";
-import { useGameActions } from "@/hooks/useStore";
+import { useRoomActions } from "@/hooks/useRoomStore";
 
 function App() {
-  const { addMember, setRoomState, setScramble } = useGameActions();
+  const { addMember, setRoomState, setScramble } = useRoomActions();
 
   useEffect(() => {
     // Someone joined room

@@ -69,7 +69,7 @@
   - Store in room, broadcast `scramble:new`
     └── Depends on: races.ts created
 
-- [ ] **Create ScrambleDisplay component**
+- [x] **Create ScrambleDisplay component**
   - Display scramble text prominently
   - Copy-to-clipboard button (optional)
     └── Depends on: Client receives scramble

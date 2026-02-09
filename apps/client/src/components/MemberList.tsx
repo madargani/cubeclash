@@ -1,4 +1,4 @@
-import { useMembers } from "@/hooks/useStore";
+import { useMembers } from "@/hooks/useRoomStore";
 
 function MemberList() {
   const members = useMembers();

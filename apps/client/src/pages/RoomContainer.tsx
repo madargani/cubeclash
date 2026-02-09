@@ -1,6 +1,6 @@
 import Lobby from "@/components/views/Lobby";
 import Timer from "@/components/views/Timer";
-import { useRoomState } from "@/hooks/useStore";
+import { useRoomState } from "@/hooks/useRoomStore";
 
 function RoomContainer() {
   const roomState = useRoomState();
