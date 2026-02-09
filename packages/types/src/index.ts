@@ -13,6 +13,7 @@ export interface ClientToServerEvents {
     callback: (members: string[] | null) => void,
   ) => void;
   start_game: (roomId: string) => void;
+  submit_solve: (roomId: string, time: number) => void;
 }
 
 export interface InterServerEvents {}

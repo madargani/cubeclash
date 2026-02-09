@@ -86,6 +86,13 @@ io.on("connection", (socket) => {
     console.log(`Room ${roomId} started game`);
   });
 
+  // Player submits solve
+  socket.on("submit_solve", (roomId, time) => {
+    console.log(
+      `User ${socket.id} completed solve in ${time.toFixed(2)} seconds`,
+    );
+  });
+
   socket.on("disconnect", () => {
     for (const roomId in socket.rooms) {
       // check if host of room

@@ -1,12 +1,19 @@
-import { useScramble } from "@/hooks/useRoomStore";
+import { useRoomId, useScramble } from "@/hooks/useRoomStore";
 import useStackmat from "@/hooks/useStackmat";
+import { socket } from "@/socket";
 import { useEffect } from "react";
 
 function Timer() {
   const scramble = useScramble();
-  const { state, display, handleHandsDown, handleHandsUp } = useStackmat();
+  const { state, display, finalTime, handleHandsDown, handleHandsUp } =
+    useStackmat();
+  const roomId = useRoomId();
 
   useEffect(() => {
+    if (state == "STOPPED") {
+      socket.emit("submit_solve", roomId, finalTime);
+    }
+
     function onKeyDown(e: KeyboardEvent) {
       if (e.code == "Space" && !e.repeat) handleHandsDown();
     }

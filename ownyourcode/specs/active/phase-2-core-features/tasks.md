@@ -82,30 +82,30 @@
 
 > Build cstimer-like timing interface.
 
-- [ ] **Create useTimer hook**
+- [x] **Create useTimer hook**
   - State: idle | ready | inspection | running | stopped
   - Use performance.now() for precision
   - Handle spacebar hold (300ms threshold)
     └── Depends on: ScrambleDisplay exists
 
-- [ ] **Create Timer component**
+- [x] **Create Timer component**
   - Large centered display (mm:ss.ms)
   - Visual states: green (ready), red (inspection), white (solving)
   - Keyboard event listeners (spacebar)
     └── Depends on: useTimer hook
 
-- [ ] **Create InspectionCountdown component**
+- [x] **Create InspectionCountdown component**
   - 15-second countdown (optional)
   - Visual + audio cues at 8s, 3s
   - Can skip inspection
     └── Depends on: Timer component
 
-- [ ] **Create TimerView container**
+- [x] **Create TimerView container**
   - Combines ScrambleDisplay + Timer + InspectionCountdown
   - Only shows when round is active
     └── Depends on: Timer, InspectionCountdown, ScrambleDisplay
 
-- [ ] **Add timer:start/stop events**
+- [x] **Add timer:start/stop events**
   - Client emits `timer:start` when user begins
   - Client emits `solve:submit` with final time
   - Prevent double-starts

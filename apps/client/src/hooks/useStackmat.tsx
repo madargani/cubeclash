@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 interface useStackmatReturn {
   state: "INSPECTING" | "PRIMING" | "READY" | "SOLVING" | "STOPPED";
   display: string;
+  finalTime: number;
   handleHandsDown: () => void;
   handleHandsUp: () => void;
 }
@@ -108,7 +109,13 @@ function useStackmat(
     requestIdRef.current = requestAnimationFrame(step);
   }, [state]);
 
-  return { state, display, handleHandsDown, handleHandsUp };
+  return {
+    state,
+    display,
+    finalTime: finalTime.current,
+    handleHandsDown,
+    handleHandsUp,
+  };
 }
 
 export default useStackmat;
