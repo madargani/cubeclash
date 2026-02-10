@@ -30,8 +30,8 @@ function App() {
     <div data-theme="forest" className="font-azeret-mono">
       <BrowserRouter>
         <Routes>
-          <Route path=":roomId?" element={<Landing />} />
           <Route path="room" element={<RoomContainer />} />
+          <Route path=":roomId?" element={<Landing />} />
         </Routes>
       </BrowserRouter>
     </div>
