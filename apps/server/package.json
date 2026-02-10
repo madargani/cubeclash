@@ -3,7 +3,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts"
+    "build": "tsc -b",
+    "dev": "tsx watch src/index.ts",
+    "start": "node ./dist/apps/server/src/index.js"
   },
   "dependencies": {
     "cubing": "^0.63.0",
