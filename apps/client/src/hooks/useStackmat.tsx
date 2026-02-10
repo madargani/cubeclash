@@ -61,6 +61,7 @@ function useStackmat(
   const handleHandsUp = useCallback(() => {
     switch (state) {
       case "PRIMING":
+        setState("INSPECTING");
         clearTimeout(timeoutIdRef.current);
         break;
       case "READY":
