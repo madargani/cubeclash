@@ -4,7 +4,8 @@ import type {
 } from "@cubeclash/types";
 import { io, Socket } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:3000";
+const SOCKET_URL =
+  import.meta.env.VITE_BACKEND_ORIGIN || "http://localhost:3000";
 
 export const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
   io(SOCKET_URL);
