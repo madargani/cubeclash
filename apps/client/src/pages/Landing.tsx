@@ -33,6 +33,7 @@ function Landing({}: LandingProps) {
           // TODO:Show join room error
           return;
         }
+        setRoomId(params.roomId!);
         setMembers(members);
         navigate("/room");
       });
