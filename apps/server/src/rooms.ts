@@ -24,10 +24,12 @@ export function createRoom(hostId: string, hostNickname: string): Room {
     nickname: hostNickname,
   };
 
-  const room = {
+  const room: Room = {
     id,
     hostId,
     members: [host],
+    round: -1,
+    results: new Map(),
   };
 
   rooms.set(id, room);
@@ -53,8 +55,7 @@ export function addMember(
   nickname: string,
 ): void {
   const room = rooms.get(roomId);
-  if (!room)
-    throw new Error(`Failed to add member. Room ${roomId} doesn't exist.`);
+  if (!room) return;
 
   const member: Member = {
     id: memberId,
@@ -74,4 +75,39 @@ export function removeMember(roomId: string, memberId: string): void {
       return;
     }
   }
+}
+
+export function startGame(roomId: string): void {
+  const room = rooms.get(roomId);
+  if (!room) return;
+
+  for (const member of room.members) room.results.set(member.id, []);
+  room.round = 0;
+}
+
+export function addResult(
+  roomId: string,
+  memberId: string,
+  time: number,
+): void {
+  const room = rooms.get(roomId);
+  if (!room) return;
+
+  const memberRecords = room.results.get(memberId);
+  if (memberRecords === undefined) return;
+
+  // if result already sent
+  if (memberRecords.length > room.round) return;
+
+  memberRecords.push(time);
+}
+
+export function areAllDone(roomId: string): boolean {
+  const room = rooms.get(roomId);
+  if (!room) return false;
+
+  for (const memberRecords of room.results.values())
+    if (memberRecords.length <= room.round) return false;
+
+  return true;
 }
