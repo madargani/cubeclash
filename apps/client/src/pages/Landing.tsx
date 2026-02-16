@@ -9,6 +9,7 @@ function Landing({}: LandingProps) {
   const nickname = useNickname();
   const { setNickname, setMembers, setRoomId } = useRoomActions();
   const params = useParams();
+  const { setIsHost } = useRoomActions();
 
   const navigate = useNavigate();
 
@@ -35,6 +36,7 @@ function Landing({}: LandingProps) {
 
     if (params.roomId) {
       // Join Room
+      setIsHost(false);
       socket.emit("join_room", nickname, params.roomId, (members) => {
         if (!members) {
           // Failed to Join Room
@@ -47,6 +49,7 @@ function Landing({}: LandingProps) {
       });
     } else {
       // Create Room
+      setIsHost(true);
       socket.emit("create_room", nickname, (roomId) => {
         setRoomId(roomId);
         setMembers([nickname]);

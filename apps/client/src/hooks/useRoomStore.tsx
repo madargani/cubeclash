@@ -11,6 +11,7 @@ interface RoomState {
   leaderboard: LeaderboardEntry[];
   actions: {
     setNickname: (nickname: string) => void;
+    setIsHost: (isHost: boolean) => void;
     setRoomId: (roomId: string) => void;
     setMembers: (members: string[]) => void;
     addMember: (nickname: string) => void;
@@ -30,6 +31,7 @@ const useRoomStore = create<RoomState>()((set) => ({
   leaderboard: [],
   actions: {
     setNickname: (nickname) => set((_state) => ({ nickname: nickname })),
+    setIsHost: (isHost) => set((_state) => ({ isHost: isHost })),
     setRoomId: (roomId) => set((_state) => ({ roomId: roomId })),
     setMembers: (members) => set((_state) => ({ members: members })),
     addMember: (nickname) =>
@@ -43,6 +45,10 @@ const useRoomStore = create<RoomState>()((set) => ({
 
 export function useNickname() {
   return useRoomStore((state) => state.nickname);
+}
+
+export function useIsHost() {
+  return useRoomStore((state) => state.isHost);
 }
 
 export function useRoomId() {
