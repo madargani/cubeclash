@@ -9,6 +9,7 @@ interface RoomState {
   roomState: "lobby" | "timer" | "leaderBoard";
   scramble: string;
   leaderboard: LeaderboardEntry[];
+  currentRound: number;
   actions: {
     setNickname: (nickname: string) => void;
     setIsHost: (isHost: boolean) => void;
@@ -18,6 +19,7 @@ interface RoomState {
     setRoomState: (roomState: "lobby" | "timer" | "leaderBoard") => void;
     setScramble: (scramble: string) => void;
     setLeaderboard: (leaderboard: LeaderboardEntry[]) => void;
+    setCurrentRound: (round: number) => void;
   };
 }
 
@@ -29,6 +31,7 @@ const useRoomStore = create<RoomState>()((set) => ({
   roomState: "lobby",
   scramble: "",
   leaderboard: [],
+  currentRound: -1,
   actions: {
     setNickname: (nickname) => set((_state) => ({ nickname: nickname })),
     setIsHost: (isHost) => set((_state) => ({ isHost: isHost })),
@@ -40,6 +43,7 @@ const useRoomStore = create<RoomState>()((set) => ({
     setScramble: (scramble) => set((_state) => ({ scramble: scramble })),
     setLeaderboard: (leaderboard) =>
       set((_state) => ({ leaderboard: leaderboard })),
+    setCurrentRound: (round) => set((_state) => ({ currentRound: round })),
   },
 }));
 
@@ -73,4 +77,8 @@ export function useLeaderboard() {
 
 export function useRoomActions() {
   return useRoomStore((state) => state.actions);
+}
+
+export function useCurrentRound() {
+  return useRoomStore((state) => state.currentRound);
 }

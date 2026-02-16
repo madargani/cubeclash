@@ -111,3 +111,23 @@ export function areAllDone(roomId: string): boolean {
 
   return true;
 }
+
+export function getCurrentRound(roomId: string): number {
+  const room = rooms.get(roomId);
+  if (!room) return -1;
+  return room.round;
+}
+
+export function canStartNextRound(roomId: string): boolean {
+  const room = rooms.get(roomId);
+  if (!room) return false;
+  return room.round < 4; // Rounds 0-4 = 5 rounds total
+}
+
+export function incrementRound(roomId: string): boolean {
+  const room = rooms.get(roomId);
+  if (!room) return false;
+  if (room.round >= 4) return false;
+  room.round += 1;
+  return true;
+}

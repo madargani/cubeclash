@@ -6,7 +6,15 @@ import type {
   SocketData,
   LeaderboardEntry,
 } from "@cubeclash/types";
-import { addResult, areAllDone, getRoom, startGame } from "../rooms.js";
+import {
+  addResult,
+  areAllDone,
+  canStartNextRound,
+  getRoom,
+  getCurrentRound,
+  incrementRound,
+  startGame,
+} from "../rooms.js";
 import { generateScramble } from "../types/scramble.js";
 import type { Room } from "../types/index.ts";
 
@@ -79,9 +87,29 @@ export function registerGameHandlers(
     if (room.hostId != socket.id) return;
 
     startGame(room.id);
-    io.to(roomId).emit("start_round", await generateScramble());
+    io.to(roomId).emit("start_round", await generateScramble(), 0);
 
     console.log(`Room ${roomId} started game`);
+  });
+
+  socket.on("next_round", async (roomId) => {
+    const room = getRoom(roomId);
+
+    if (!room) return;
+    if (room.hostId != socket.id) return;
+
+    if (!canStartNextRound(roomId)) {
+      console.log(`Room ${roomId} attempted to start next round but max rounds reached`);
+      return;
+    }
+
+    const success = incrementRound(roomId);
+    if (!success) return;
+
+    const currentRound = getCurrentRound(roomId);
+    io.to(roomId).emit("start_round", await generateScramble(), currentRound);
+
+    console.log(`Room ${roomId} started round ${currentRound + 1}`);
   });
 
   socket.on("submit_solve", (roomId, time) => {

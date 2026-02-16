@@ -6,7 +6,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { useRoomActions } from "@/hooks/useRoomStore";
 
 function App() {
-  const { addMember, setRoomState, setScramble, setLeaderboard } = useRoomActions();
+  const { addMember, setRoomState, setScramble, setLeaderboard, setCurrentRound } = useRoomActions();
 
   useEffect(() => {
     // Someone joined room
@@ -15,9 +15,10 @@ function App() {
     });
 
     // Start new round
-    socket.on("start_round", (scramble) => {
+    socket.on("start_round", (scramble, round) => {
       setRoomState("timer");
       setScramble(scramble);
+      setCurrentRound(round);
     });
 
     // Round completed - show leaderboard

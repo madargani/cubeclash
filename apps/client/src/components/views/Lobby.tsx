@@ -23,7 +23,7 @@ function Lobby() {
       </div>
       {isHost && (
         <button
-          className="btn btn-lg relative right-0 bg-primary text-primary-content"
+          className="btn btn-lg bg-primary text-primary-content"
           onClick={handleStart}
         >
           Start
