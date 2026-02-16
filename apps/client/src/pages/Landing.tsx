@@ -1,4 +1,4 @@
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, KeyboardEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useRoomActions, useNickname } from "@/hooks/useRoomStore";
 import { socket } from "@/socket";
@@ -19,6 +19,14 @@ function Landing({}: LandingProps) {
     const validated = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
     if (validated.length > 10) return;
     setNickname(validated);
+  };
+
+  // Called when a key is pressed in the input
+  // Triggers join/create when Enter is pressed
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleCreateAndJoin();
+    }
   };
 
   const handleCreateAndJoin = () => {
@@ -59,6 +67,7 @@ function Landing({}: LandingProps) {
         className="input input-xl"
         value={nickname}
         onChange={handleNameChange}
+        onKeyDown={handleKeyDown}
       />
       <button className="btn btn-primary btn-xl" onClick={handleCreateAndJoin}>
         {params.roomId ? "Join Room" : "Create Room"}

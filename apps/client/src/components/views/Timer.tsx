@@ -20,12 +20,35 @@ function Timer() {
     function onKeyUp(e: KeyboardEvent) {
       if (e.code == "Space" && !e.repeat) handleHandsUp();
     }
+    function onMouseDown(e: MouseEvent) {
+      if (e.button === 0) handleHandsDown();
+    }
+    function onMouseUp(e: MouseEvent) {
+      if (e.button === 0) handleHandsUp();
+    }
+    function onTouchStart(e: TouchEvent) {
+      e.preventDefault();
+      handleHandsDown();
+    }
+    function onTouchEnd(e: TouchEvent) {
+      e.preventDefault();
+      handleHandsUp();
+    }
+
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("touchstart", onTouchStart, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: false });
 
     return () => {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
     };
   }, [state]);
 
