@@ -4,9 +4,11 @@ import type {
   ServerToClientEvents,
   InterServerEvents,
   SocketData,
+  LeaderboardEntry,
 } from "@cubeclash/types";
 import { addResult, areAllDone, getRoom, startGame } from "../rooms.js";
 import { generateScramble } from "../types/scramble.js";
+import type { Room } from "../types/index.ts";
 
 type CubeClashSocket = Socket<
   ClientToServerEvents,
@@ -21,6 +23,50 @@ type CubeClashServer = Server<
   InterServerEvents,
   SocketData
 >;
+
+function calculateLeaderboard(room: Room): LeaderboardEntry[] {
+  const entries: LeaderboardEntry[] = [];
+
+  for (const member of room.members) {
+    const times = room.results.get(member.id) || [];
+    const rounds: (number | null)[] = [];
+
+    // Fill rounds 1-5 with times or null
+    for (let i = 0; i < 5; i++) {
+      const time = i < times.length ? times[i] : undefined;
+      rounds.push(time ?? null);
+    }
+
+    // Calculate average if at least one time exists
+    const validTimes = times.filter((t) => t !== undefined);
+    const average =
+      validTimes.length > 0
+        ? validTimes.reduce((a, b) => a + b, 0) / validTimes.length
+        : null;
+
+    entries.push({
+      rank: 0, // Will be calculated after sorting
+      name: member.nickname,
+      rounds,
+      average,
+    });
+  }
+
+  // Sort by average (null averages go to bottom)
+  entries.sort((a, b) => {
+    if (a.average === null && b.average === null) return 0;
+    if (a.average === null) return 1;
+    if (b.average === null) return -1;
+    return a.average - b.average;
+  });
+
+  // Assign ranks
+  entries.forEach((entry, index) => {
+    entry.rank = index + 1;
+  });
+
+  return entries;
+}
 
 export function registerGameHandlers(
   socket: CubeClashSocket,
@@ -50,11 +96,11 @@ export function registerGameHandlers(
 
     // If all solvers are done, post results
     if (areAllDone(roomId)) {
-      socket.emit("round_done", room.results);
-      const resultString = Array.from(room.results.entries());
-      console.log(
-        `Room ${room.id} results for round ${room.round}: ${resultString}`,
-      );
+      const leaderboard = calculateLeaderboard(room);
+      io.to(roomId).emit("round_done", leaderboard);
+      console.log(`Room ${room.id} results for round ${room.round}:`);
+      for (const entry of leaderboard)
+        console.log(`\t${entry.rank}. ${entry.name}: ${entry.average?.toFixed(2) ?? "--"}s`);
     }
   });
 }

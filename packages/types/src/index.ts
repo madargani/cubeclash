@@ -1,9 +1,17 @@
+// Leaderboard Types
+export interface LeaderboardEntry {
+  rank: number;
+  name: string;
+  rounds: (number | null)[];
+  average: number | null;
+}
+
 // Socket.io Types
 export interface ServerToClientEvents {
   member_joined: (nickname: string) => void;
   member_left: (nickname: string) => void;
   start_round: (scramble: string) => void;
-  round_done: (results: Map<string, number[]>) => void;
+  round_done: (leaderboard: LeaderboardEntry[]) => void;
 }
 
 export interface ClientToServerEvents {

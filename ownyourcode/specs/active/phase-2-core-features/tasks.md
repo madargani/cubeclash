@@ -119,12 +119,12 @@
 
 > Live race results.
 
-- [ ] **Create leaderboard.ts (server)**
+- [x] **Create leaderboard.ts (server)**
   - Track RaceResults per room
   - Sort function: finished (by time), then DNF, then solving
     └── Depends on: Race type defined
 
-- [ ] **Add solve:submit handler (server)**
+- [x] **Add solve:submit handler (server)**
   - Validate submission (time > 0, round active)
   - Add to leaderboard results
   - Broadcast `leaderboard:update`

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { LeaderboardEntry } from "@cubeclash/types";
 
 interface RoomState {
   nickname: string;
@@ -7,6 +8,7 @@ interface RoomState {
   members: string[];
   roomState: "lobby" | "timer" | "leaderBoard";
   scramble: string;
+  leaderboard: LeaderboardEntry[];
   actions: {
     setNickname: (nickname: string) => void;
     setRoomId: (roomId: string) => void;
@@ -14,6 +16,7 @@ interface RoomState {
     addMember: (nickname: string) => void;
     setRoomState: (roomState: "lobby" | "timer" | "leaderBoard") => void;
     setScramble: (scramble: string) => void;
+    setLeaderboard: (leaderboard: LeaderboardEntry[]) => void;
   };
 }
 
@@ -24,6 +27,7 @@ const useRoomStore = create<RoomState>()((set) => ({
   members: [],
   roomState: "lobby",
   scramble: "",
+  leaderboard: [],
   actions: {
     setNickname: (nickname) => set((_state) => ({ nickname: nickname })),
     setRoomId: (roomId) => set((_state) => ({ roomId: roomId })),
@@ -32,6 +36,8 @@ const useRoomStore = create<RoomState>()((set) => ({
       set((state) => ({ members: [...state.members, nickname] })),
     setRoomState: (roomState) => set((_state) => ({ roomState: roomState })),
     setScramble: (scramble) => set((_state) => ({ scramble: scramble })),
+    setLeaderboard: (leaderboard) =>
+      set((_state) => ({ leaderboard: leaderboard })),
   },
 }));
 
@@ -53,6 +59,10 @@ export function useRoomState() {
 
 export function useScramble() {
   return useRoomStore((state) => state.scramble);
+}
+
+export function useLeaderboard() {
+  return useRoomStore((state) => state.leaderboard);
 }
 
 export function useRoomActions() {

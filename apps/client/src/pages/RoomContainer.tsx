@@ -1,3 +1,4 @@
+import Leaderboard from "@/components/views/Leaderboard";
 import Lobby from "@/components/views/Lobby";
 import Timer from "@/components/views/Timer";
 import { useRoomState } from "@/hooks/useRoomStore";
@@ -11,8 +12,7 @@ function RoomContainer() {
     case "timer":
       return <Timer />;
     case "leaderBoard":
-      // TODO: implement leaderboard
-      return <div>Leaderboard</div>;
+      return <Leaderboard />;
   }
 }
 
