@@ -53,7 +53,6 @@ function useStackmat(
         const now = performance.now() / 1000;
         finalTime.current = now - solveStart.current;
         setState("STOPPED");
-        cancelAnimationFrame(requestIdRef.current);
         break;
     }
   }, [inspectionTime, primingTime, state]);
@@ -72,9 +71,12 @@ function useStackmat(
   }, [inspectionTime, primingTime, state]);
 
   useEffect(() => {
+    cancelAnimationFrame(requestIdRef.current);
+
     function step() {
       const now = performance.now() / 1000;
 
+      console.log(state);
       switch (state) {
         case "INSPECTING":
         case "PRIMING":
@@ -100,7 +102,7 @@ function useStackmat(
         case "STOPPED":
           const seconds = finalTime.current;
           setDisplay(seconds.toFixed(2));
-          break;
+          return;
       }
 
       // Request again to loop
