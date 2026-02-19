@@ -9,7 +9,7 @@ interface useStackmatReturn {
 }
 
 function useStackmat(
-  inspectionTime: number = 20,
+  inspectionTime: number = 60,
   primingTime: number = 1,
 ): useStackmatReturn {
   const [state, setState] = useState<
