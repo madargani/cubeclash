@@ -43,8 +43,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="" element={<Home />} />
         <Route path="room" element={<RoomContainer />} />
-        <Route path=":roomId?" element={<Home />} />
       </Routes>
     </BrowserRouter>
   );
