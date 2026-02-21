@@ -70,14 +70,14 @@ export function useGameState() {
   return useGameStore((state) => state.stage);
 }
 
-export function useScramble() {
+export function useScrambles() {
   return useGameStore((state) => state.scrambles);
 }
 
 export function useCurrentScramble() {
   const scrambles = useGameStore((state) => state.scrambles);
   const currentRound = useGameStore((state) => state.currentRound);
-  return scrambles[currentRound + 1] || "";
+  return scrambles[currentRound] || "";
 }
 
 export function useLeaderboard() {
