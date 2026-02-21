@@ -1,11 +1,11 @@
 import { useCallback, useEffect } from "react";
-import { useRoomId, useScramble } from "@/hooks/useGameStore";
+import { useRoomId, useCurrentScramble } from "@/hooks/useGameStore";
 import useStackmat from "@/hooks/useStackmat";
 import { socket } from "@/socket";
 import { Text } from "../retroui/Text";
 
 function Timer() {
-  const scramble = useScramble();
+  const scramble = useCurrentScramble();
   const { state, display, finalTime, handleHandsDown, handleHandsUp } =
     useStackmat();
   const roomId = useRoomId();

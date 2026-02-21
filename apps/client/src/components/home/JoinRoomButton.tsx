@@ -1,14 +1,15 @@
-import { useState } from "react";
 import { Button } from "../retroui/Button";
 import { Dialog } from "../retroui/Dialog";
 import { Input } from "../retroui/Input";
 import { Text } from "../retroui/Text";
 import { useHomeActions } from "@/hooks/useHomeActions";
 import { Label } from "../retroui/Label";
+import { useGameActions, useNickname, useRoomId } from "@/hooks/useGameStore";
 
 function JoinRoomButton() {
-  const [nickname, setNickname] = useState("");
-  const [roomId, setRoomId] = useState("");
+  const nickname = useNickname();
+  const roomId = useRoomId();
+  const { setNickname, setRoomId } = useGameActions();
   const { handleJoinRoom } = useHomeActions();
 
   return (
@@ -42,9 +43,7 @@ function JoinRoomButton() {
         </div>
         <Dialog.Footer>
           <Dialog.Trigger asChild>
-            <Button onClick={() => handleJoinRoom(nickname, roomId)}>
-              Join
-            </Button>
+            <Button onClick={handleJoinRoom}>Join</Button>
           </Dialog.Trigger>
         </Dialog.Footer>
       </Dialog.Content>

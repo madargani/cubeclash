@@ -1,5 +1,5 @@
 import {
-  useIsHost,
+  useGameStore,
   useLeaderboard,
   useRoomId,
   useCurrentRound,
@@ -12,7 +12,7 @@ import { Button } from "../retroui/Button";
 
 function Leaderboard() {
   const leaderboard = useLeaderboard();
-  const isHost = useIsHost();
+  const hostNickname = useGameStore((state) => state.hostNickname);
   const roomId = useRoomId();
   const currentRound = useCurrentRound();
 
@@ -50,7 +50,7 @@ function Leaderboard() {
             ))}
           </Table.Body>
         </Table>
-        {isHost && currentRound < 4 && (
+        {hostNickname !== "" && currentRound < 4 && (
           <Button className="self-end" onClick={handleNextRound}>
             {buttonText}
           </Button>

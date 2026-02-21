@@ -1,13 +1,13 @@
 import MemberList from "@/components/lobby/MemberList";
 import Settings from "@/components/lobby/Settings";
-import { useIsHost, useRoomId } from "@/hooks/useGameStore";
+import { useGameStore, useRoomId } from "@/hooks/useGameStore";
 import { socket } from "@/socket";
 import { Text } from "@/components/retroui/Text";
 import { Button } from "../retroui/Button";
 
 function Lobby() {
   const roomId = useRoomId();
-  const isHost = useIsHost();
+  const hostNickname = useGameStore((state) => state.hostNickname);
 
   const handleStart = () => {
     socket.emit("start_game", roomId);
@@ -24,7 +24,7 @@ function Lobby() {
           <MemberList />
           <Settings />
         </div>
-        {isHost && (
+        {hostNickname !== "" && (
           <Button onClick={handleStart} className="self-end">
             Start
           </Button>

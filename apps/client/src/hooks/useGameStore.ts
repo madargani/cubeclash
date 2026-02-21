@@ -3,44 +3,46 @@ import type { LeaderboardEntry } from "@cubeclash/types";
 
 interface GameState {
   nickname: string;
-  isHost: boolean;
+  hostNickname: string;
   roomId: string;
   members: string[];
-  roomState: "lobby" | "timer" | "leaderBoard";
-  scramble: string;
+  stage: "lobby" | "timer" | "leaderboard";
+  scrambles: string[];
   leaderboard: LeaderboardEntry[];
   currentRound: number;
   actions: {
     setNickname: (nickname: string) => void;
-    setIsHost: (isHost: boolean) => void;
+    setHostNickname: (hostNickname: string) => void;
     setRoomId: (roomId: string) => void;
     setMembers: (members: string[]) => void;
     addMember: (nickname: string) => void;
-    setGameState: (roomState: "lobby" | "timer" | "leaderBoard") => void;
-    setScramble: (scramble: string) => void;
+    setStage: (stage: "lobby" | "timer" | "leaderboard") => void;
+    addScramble: (scramble: string) => void;
     setLeaderboard: (leaderboard: LeaderboardEntry[]) => void;
     setCurrentRound: (round: number) => void;
   };
 }
 
-const useGameStore = create<GameState>()((set) => ({
+export const useGameStore = create<GameState>()((set) => ({
   nickname: "",
-  isHost: false,
+  hostNickname: "",
   roomId: "",
   members: [],
-  roomState: "lobby",
-  scramble: "",
+  stage: "lobby",
+  scrambles: [],
   leaderboard: [],
   currentRound: -1,
   actions: {
     setNickname: (nickname) => set((_state) => ({ nickname: nickname })),
-    setIsHost: (isHost) => set((_state) => ({ isHost: isHost })),
+    setHostNickname: (hostNickname) =>
+      set((_state) => ({ hostNickname: hostNickname })),
     setRoomId: (roomId) => set((_state) => ({ roomId: roomId })),
     setMembers: (members) => set((_state) => ({ members: members })),
     addMember: (nickname) =>
       set((state) => ({ members: [...state.members, nickname] })),
-    setGameState: (roomState) => set((_state) => ({ roomState: roomState })),
-    setScramble: (scramble) => set((_state) => ({ scramble: scramble })),
+    setStage: (stage) => set((_state) => ({ stage: stage })),
+    addScramble: (scramble) =>
+      set((state) => ({ scrambles: [...state.scrambles, scramble] })),
     setLeaderboard: (leaderboard) =>
       set((_state) => ({ leaderboard: leaderboard })),
     setCurrentRound: (round) => set((_state) => ({ currentRound: round })),
@@ -52,7 +54,8 @@ export function useNickname() {
 }
 
 export function useIsHost() {
-  return useGameStore((state) => state.isHost);
+  const hostNickname = useGameStore((state) => state.hostNickname);
+  return hostNickname !== "";
 }
 
 export function useRoomId() {
@@ -64,11 +67,17 @@ export function useMembers() {
 }
 
 export function useGameState() {
-  return useGameStore((state) => state.roomState);
+  return useGameStore((state) => state.stage);
 }
 
 export function useScramble() {
-  return useGameStore((state) => state.scramble);
+  return useGameStore((state) => state.scrambles);
+}
+
+export function useCurrentScramble() {
+  const scrambles = useGameStore((state) => state.scrambles);
+  const currentRound = useGameStore((state) => state.currentRound);
+  return scrambles[currentRound + 1] || "";
 }
 
 export function useLeaderboard() {

@@ -6,13 +6,8 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { useGameActions } from "@/hooks/useGameStore";
 
 function App() {
-  const {
-    addMember,
-    setGameState,
-    setScramble,
-    setLeaderboard,
-    setCurrentRound,
-  } = useGameActions();
+  const { addMember, setStage, addScramble, setLeaderboard, setCurrentRound } =
+    useGameActions();
 
   useEffect(() => {
     // Someone joined room
@@ -22,15 +17,15 @@ function App() {
 
     // Start new round
     socket.on("start_round", (scramble, round) => {
-      setGameState("timer");
-      setScramble(scramble);
+      setStage("timer");
+      addScramble(scramble);
       setCurrentRound(round);
     });
 
     // Round completed - show leaderboard
     socket.on("round_done", (leaderboard) => {
       setLeaderboard(leaderboard);
-      setGameState("leaderBoard");
+      setStage("leaderboard");
     });
 
     return () => {
@@ -38,7 +33,7 @@ function App() {
       socket.off("start_round");
       socket.off("round_done");
     };
-  }, [addMember, setGameState, setScramble, setLeaderboard, setCurrentRound]);
+  }, [addMember, setStage, addScramble, setLeaderboard, setCurrentRound]);
 
   return (
     <BrowserRouter>
