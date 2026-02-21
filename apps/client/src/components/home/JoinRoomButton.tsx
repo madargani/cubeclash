@@ -4,6 +4,7 @@ import { Dialog } from "../retroui/Dialog";
 import { Input } from "../retroui/Input";
 import { Text } from "../retroui/Text";
 import { useHomeActions } from "@/hooks/useHomeActions";
+import { Label } from "../retroui/Label";
 
 function JoinRoomButton() {
   const [nickname, setNickname] = useState("");
@@ -21,17 +22,19 @@ function JoinRoomButton() {
         </Dialog.Header>
         <div className="flex flex-col p-4 gap-4">
           <div className="flex-col gap-2">
-            <label htmlFor="roomId">Room Id</label>
+            <Label htmlFor="roomId">Room Id</Label>
             <Input
               placeholder="Enter rooom id"
+              id="roomId"
               value={roomId}
               onChange={(e) => setRoomId(e.target.value)}
             />
           </div>
           <div className="flex-col gap-2">
-            <label htmlFor="name">Nickname</label>
+            <Label htmlFor="nickname">Nickname</Label>
             <Input
               placeholder="Enter a nickname"
+              id="nickname"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
             />
