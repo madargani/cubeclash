@@ -5,7 +5,7 @@ import {
   useCurrentRound,
 } from "@/hooks/useGameStore";
 import { formatTime } from "@/lib/utils";
-import { socket } from "@/socket";
+import { useRoom } from "@/hooks/useRoom";
 import { Text } from "../retroui/Text";
 import { Table } from "../retroui/Table";
 import { Button } from "../retroui/Button";
@@ -15,9 +15,10 @@ function Leaderboard() {
   const hostNickname = useGameStore((state) => state.hostNickname);
   const roomId = useRoomId();
   const currentRound = useCurrentRound();
+  const { nextRound } = useRoom();
 
   const handleNextRound = () => {
-    socket.emit("next_round", roomId);
+    nextRound(roomId);
   };
 
   const buttonText = currentRound === 3 ? "Final Round" : "Next Round";

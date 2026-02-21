@@ -1,16 +1,17 @@
 import MemberList from "@/components/lobby/MemberList";
 import Settings from "@/components/lobby/Settings";
 import { useGameStore, useRoomId } from "@/hooks/useGameStore";
-import { socket } from "@/socket";
+import { useRoom } from "@/hooks/useRoom";
 import { Text } from "@/components/retroui/Text";
 import { Button } from "../retroui/Button";
 
 function Lobby() {
   const roomId = useRoomId();
   const hostNickname = useGameStore((state) => state.hostNickname);
+  const { startGame } = useRoom();
 
   const handleStart = () => {
-    socket.emit("start_game", roomId);
+    startGame(roomId);
   };
 
   return (

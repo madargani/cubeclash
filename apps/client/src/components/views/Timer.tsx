@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useRoomId, useCurrentScramble } from "@/hooks/useGameStore";
 import useStackmat from "@/hooks/useStackmat";
-import { socket } from "@/socket";
+import { useRoom } from "@/hooks/useRoom";
 import { Text } from "../retroui/Text";
 
 function Timer() {
@@ -9,6 +9,7 @@ function Timer() {
   const { state, display, finalTime, handleHandsDown, handleHandsUp } =
     useStackmat();
   const roomId = useRoomId();
+  const { submitSolve } = useRoom();
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -50,9 +51,9 @@ function Timer() {
 
   useEffect(() => {
     if (state == "STOPPED") {
-      socket.emit("submit_solve", roomId, finalTime);
+      submitSolve(roomId, finalTime);
     }
-  }, [state, finalTime, roomId]);
+  }, [state, finalTime, roomId, submitSolve]);
 
   useEffect(() => {
     window.addEventListener("keydown", onKeyDown);
