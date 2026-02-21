@@ -1,12 +1,18 @@
 import { useEffect } from "react";
 import { socket } from "@/socket";
-import Landing from "@/pages/Landing";
+import Home from "@/pages/Home";
 import RoomContainer from "@/pages/RoomContainer";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { useRoomActions } from "@/hooks/useRoomStore";
 
 function App() {
-  const { addMember, setRoomState, setScramble, setLeaderboard, setCurrentRound } = useRoomActions();
+  const {
+    addMember,
+    setRoomState,
+    setScramble,
+    setLeaderboard,
+    setCurrentRound,
+  } = useRoomActions();
 
   useEffect(() => {
     // Someone joined room
@@ -35,14 +41,12 @@ function App() {
   }, []);
 
   return (
-    <div data-theme="forest" className="font-azeret-mono">
-      <BrowserRouter>
-        <Routes>
-          <Route path="room" element={<RoomContainer />} />
-          <Route path=":roomId?" element={<Landing />} />
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="room" element={<RoomContainer />} />
+        <Route path=":roomId?" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

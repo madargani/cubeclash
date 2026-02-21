@@ -1,0 +1,52 @@
+import { useState } from "react";
+import { Button } from "../retroui/Button";
+import { Dialog } from "../retroui/Dialog";
+import { Input } from "../retroui/Input";
+import { Text } from "../retroui/Text";
+import { useHomeActions } from "@/hooks/useHomeActions";
+
+function JoinRoomButton() {
+  const [nickname, setNickname] = useState("");
+  const [roomId, setRoomId] = useState("");
+  const { handleJoinRoom } = useHomeActions();
+
+  return (
+    <Dialog>
+      <Dialog.Trigger asChild>
+        <Button>Join Room</Button>
+      </Dialog.Trigger>
+      <Dialog.Content size={"auto"}>
+        <Dialog.Header>
+          <Text as="h5">Join Room</Text>
+        </Dialog.Header>
+        <div className="flex flex-col p-4 gap-4">
+          <div className="flex-col gap-2">
+            <label htmlFor="roomId">Room Id</label>
+            <Input
+              placeholder="Enter rooom id"
+              value={roomId}
+              onChange={(e) => setRoomId(e.target.value)}
+            />
+          </div>
+          <div className="flex-col gap-2">
+            <label htmlFor="name">Nickname</label>
+            <Input
+              placeholder="Enter a nickname"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+            />
+          </div>
+        </div>
+        <Dialog.Footer>
+          <Dialog.Trigger asChild>
+            <Button onClick={() => handleJoinRoom(nickname, roomId)}>
+              Join
+            </Button>
+          </Dialog.Trigger>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog>
+  );
+}
+
+export default JoinRoomButton;
