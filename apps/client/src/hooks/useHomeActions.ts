@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router";
-import { useRoomActions } from "./useRoomStore";
+import { useGameActions } from "./useGameStore";
 import { socket } from "@/socket";
 
 export function useHomeActions() {
-  const { setNickname, setMembers, setRoomId, setIsHost } = useRoomActions();
+  const { setNickname, setMembers, setRoomId, setIsHost } = useGameActions();
   const navigate = useNavigate();
 
   const handleCreateRoom = useCallback(

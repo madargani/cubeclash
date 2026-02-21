@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { LeaderboardEntry } from "@cubeclash/types";
 
-interface RoomState {
+interface GameState {
   nickname: string;
   isHost: boolean;
   roomId: string;
@@ -16,14 +16,14 @@ interface RoomState {
     setRoomId: (roomId: string) => void;
     setMembers: (members: string[]) => void;
     addMember: (nickname: string) => void;
-    setRoomState: (roomState: "lobby" | "timer" | "leaderBoard") => void;
+    setGameState: (roomState: "lobby" | "timer" | "leaderBoard") => void;
     setScramble: (scramble: string) => void;
     setLeaderboard: (leaderboard: LeaderboardEntry[]) => void;
     setCurrentRound: (round: number) => void;
   };
 }
 
-const useRoomStore = create<RoomState>()((set) => ({
+const useGameStore = create<GameState>()((set) => ({
   nickname: "",
   isHost: false,
   roomId: "",
@@ -39,7 +39,7 @@ const useRoomStore = create<RoomState>()((set) => ({
     setMembers: (members) => set((_state) => ({ members: members })),
     addMember: (nickname) =>
       set((state) => ({ members: [...state.members, nickname] })),
-    setRoomState: (roomState) => set((_state) => ({ roomState: roomState })),
+    setGameState: (roomState) => set((_state) => ({ roomState: roomState })),
     setScramble: (scramble) => set((_state) => ({ scramble: scramble })),
     setLeaderboard: (leaderboard) =>
       set((_state) => ({ leaderboard: leaderboard })),
@@ -48,37 +48,37 @@ const useRoomStore = create<RoomState>()((set) => ({
 }));
 
 export function useNickname() {
-  return useRoomStore((state) => state.nickname);
+  return useGameStore((state) => state.nickname);
 }
 
 export function useIsHost() {
-  return useRoomStore((state) => state.isHost);
+  return useGameStore((state) => state.isHost);
 }
 
 export function useRoomId() {
-  return useRoomStore((state) => state.roomId);
+  return useGameStore((state) => state.roomId);
 }
 
 export function useMembers() {
-  return useRoomStore((state) => state.members);
+  return useGameStore((state) => state.members);
 }
 
-export function useRoomState() {
-  return useRoomStore((state) => state.roomState);
+export function useGameState() {
+  return useGameStore((state) => state.roomState);
 }
 
 export function useScramble() {
-  return useRoomStore((state) => state.scramble);
+  return useGameStore((state) => state.scramble);
 }
 
 export function useLeaderboard() {
-  return useRoomStore((state) => state.leaderboard);
+  return useGameStore((state) => state.leaderboard);
 }
 
-export function useRoomActions() {
-  return useRoomStore((state) => state.actions);
+export function useGameActions() {
+  return useGameStore((state) => state.actions);
 }
 
 export function useCurrentRound() {
-  return useRoomStore((state) => state.currentRound);
+  return useGameStore((state) => state.currentRound);
 }

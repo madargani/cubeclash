@@ -1,4 +1,4 @@
-import { useIsHost, useLeaderboard, useRoomId, useCurrentRound } from "@/hooks/useRoomStore";
+import { useIsHost, useLeaderboard, useRoomId, useCurrentRound } from "@/hooks/useGameStore";
 import { socket } from "@/socket";
 import type { LeaderboardEntry } from "@cubeclash/types";
 

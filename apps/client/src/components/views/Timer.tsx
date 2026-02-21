@@ -1,4 +1,4 @@
-import { useRoomId, useScramble } from "@/hooks/useRoomStore";
+import { useRoomId, useScramble } from "@/hooks/useGameStore";
 import useStackmat from "@/hooks/useStackmat";
 import { socket } from "@/socket";
 import { useEffect } from "react";

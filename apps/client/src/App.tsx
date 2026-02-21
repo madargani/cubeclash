@@ -3,16 +3,16 @@ import { socket } from "@/socket";
 import Home from "@/pages/Home";
 import RoomContainer from "@/pages/RoomContainer";
 import { BrowserRouter, Route, Routes } from "react-router";
-import { useRoomActions } from "@/hooks/useRoomStore";
+import { useGameActions } from "@/hooks/useGameStore";
 
 function App() {
   const {
     addMember,
-    setRoomState,
+    setGameState,
     setScramble,
     setLeaderboard,
     setCurrentRound,
-  } = useRoomActions();
+  } = useGameActions();
 
   useEffect(() => {
     // Someone joined room
@@ -22,7 +22,7 @@ function App() {
 
     // Start new round
     socket.on("start_round", (scramble, round) => {
-      setRoomState("timer");
+      setGameState("timer");
       setScramble(scramble);
       setCurrentRound(round);
     });
@@ -30,7 +30,7 @@ function App() {
     // Round completed - show leaderboard
     socket.on("round_done", (leaderboard) => {
       setLeaderboard(leaderboard);
-      setRoomState("leaderBoard");
+      setGameState("leaderBoard");
     });
 
     return () => {

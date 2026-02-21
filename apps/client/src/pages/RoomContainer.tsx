@@ -1,10 +1,10 @@
 import Leaderboard from "@/components/views/Leaderboard";
 import Lobby from "@/components/views/Lobby";
 import Timer from "@/components/views/Timer";
-import { useRoomState } from "@/hooks/useRoomStore";
+import { useGameState } from "@/hooks/useGameStore";
 
 function RoomContainer() {
-  const roomState = useRoomState();
+  const roomState = useGameState();
 
   switch (roomState) {
     case "lobby":
