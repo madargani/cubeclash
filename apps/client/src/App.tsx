@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { socket } from "@/socket";
-import Landing from "@/pages/Landing";
+import Home from "@/pages/Home";
 import RoomContainer from "@/pages/RoomContainer";
 import { BrowserRouter, Route, Routes } from "react-router";
-import { useRoomActions } from "@/hooks/useRoomStore";
+import { useGameActions } from "@/hooks/useGameStore";
 
 function App() {
-  const { addMember, setRoomState, setScramble, setLeaderboard, setCurrentRound } = useRoomActions();
+  const { addMember, setStage, addScramble, setLeaderboard, setCurrentRound } =
+    useGameActions();
 
   useEffect(() => {
     // Someone joined room
@@ -16,15 +17,15 @@ function App() {
 
     // Start new round
     socket.on("start_round", (scramble, round) => {
-      setRoomState("timer");
-      setScramble(scramble);
+      setStage("timer");
+      addScramble(scramble);
       setCurrentRound(round);
     });
 
     // Round completed - show leaderboard
     socket.on("round_done", (leaderboard) => {
       setLeaderboard(leaderboard);
-      setRoomState("leaderBoard");
+      setStage("leaderboard");
     });
 
     return () => {
@@ -32,17 +33,15 @@ function App() {
       socket.off("start_round");
       socket.off("round_done");
     };
-  }, []);
+  }, [addMember, setStage, addScramble, setLeaderboard, setCurrentRound]);
 
   return (
-    <div data-theme="forest" className="font-azeret-mono">
-      <BrowserRouter>
-        <Routes>
-          <Route path="room" element={<RoomContainer />} />
-          <Route path=":roomId?" element={<Landing />} />
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="" element={<Home />} />
+        <Route path="room" element={<RoomContainer />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

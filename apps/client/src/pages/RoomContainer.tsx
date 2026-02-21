@@ -1,17 +1,25 @@
 import Leaderboard from "@/components/views/Leaderboard";
 import Lobby from "@/components/views/Lobby";
 import Timer from "@/components/views/Timer";
-import { useRoomState } from "@/hooks/useRoomStore";
+import { useGameStore, useRoomId } from "@/hooks/useGameStore";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 
 function RoomContainer() {
-  const roomState = useRoomState();
+  const roomId = useRoomId();
+  const navigate = useNavigate();
+  const stage = useGameStore((state) => state.stage);
 
-  switch (roomState) {
+  useEffect(() => {
+    if (!roomId) navigate("/");
+  }, [navigate]);
+
+  switch (stage) {
     case "lobby":
       return <Lobby />;
     case "timer":
       return <Timer />;
-    case "leaderBoard":
+    case "leaderboard":
       return <Leaderboard />;
   }
 }

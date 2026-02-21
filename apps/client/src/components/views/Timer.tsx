@@ -1,40 +1,60 @@
-import { useRoomId, useScramble } from "@/hooks/useRoomStore";
+import { useCallback, useEffect } from "react";
+import { useRoomId, useCurrentScramble } from "@/hooks/useGameStore";
 import useStackmat from "@/hooks/useStackmat";
 import { socket } from "@/socket";
-import { useEffect } from "react";
+import { Text } from "../retroui/Text";
 
 function Timer() {
-  const scramble = useScramble();
+  const scramble = useCurrentScramble();
   const { state, display, finalTime, handleHandsDown, handleHandsUp } =
     useStackmat();
   const roomId = useRoomId();
+
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.code == "Space" && !e.repeat) handleHandsDown();
+    },
+    [handleHandsDown],
+  );
+
+  const onKeyUp = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.code == "Space" && !e.repeat) handleHandsUp();
+    },
+    [handleHandsUp],
+  );
+
+  const onMouseDown = useCallback(() => {
+    handleHandsDown();
+  }, [handleHandsDown]);
+
+  const onMouseUp = useCallback(() => {
+    handleHandsUp();
+  }, [handleHandsUp]);
+
+  const onTouchStart = useCallback(
+    (e: TouchEvent) => {
+      e.preventDefault();
+      handleHandsDown();
+    },
+    [handleHandsDown],
+  );
+
+  const onTouchEnd = useCallback(
+    (e: TouchEvent) => {
+      e.preventDefault();
+      handleHandsUp();
+    },
+    [handleHandsUp],
+  );
 
   useEffect(() => {
     if (state == "STOPPED") {
       socket.emit("submit_solve", roomId, finalTime);
     }
+  }, [state, finalTime, roomId]);
 
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.code == "Space" && !e.repeat) handleHandsDown();
-    }
-    function onKeyUp(e: KeyboardEvent) {
-      if (e.code == "Space" && !e.repeat) handleHandsUp();
-    }
-    function onMouseDown(e: MouseEvent) {
-      if (e.button === 0) handleHandsDown();
-    }
-    function onMouseUp(e: MouseEvent) {
-      if (e.button === 0) handleHandsUp();
-    }
-    function onTouchStart(e: TouchEvent) {
-      e.preventDefault();
-      handleHandsDown();
-    }
-    function onTouchEnd(e: TouchEvent) {
-      e.preventDefault();
-      handleHandsUp();
-    }
-
+  useEffect(() => {
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("mousedown", onMouseDown);
@@ -50,19 +70,19 @@ function Timer() {
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchend", onTouchEnd);
     };
-  }, [state]);
+  }, [onKeyDown, onKeyUp, onMouseDown, onMouseUp, onTouchStart, onTouchEnd]);
 
   return (
-    <main className="h-screen p-4 flex flex-col">
-      <p className="text-xl text-center">{scramble}</p>
+    <main className="h-screen p-8 flex flex-col">
+      <Text className="text-xl text-center">{scramble}</Text>
       <div className="flex-1 flex flex-col justify-center">
-        <p
+        <Text
           className={`text-9xl text-center 
-            ${state == "PRIMING" && "text-warning"} 
-            ${state == "READY" && "text-success"}`}
+            ${state == "PRIMING" && "text-destructive"} 
+            ${state == "READY" && "text-primary"}`}
         >
           {display}
-        </p>
+        </Text>
       </div>
     </main>
   );
