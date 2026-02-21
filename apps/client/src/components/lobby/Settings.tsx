@@ -4,8 +4,10 @@ import { Label } from "../retroui/Label";
 import { Select } from "../retroui/Select";
 import { Input } from "../retroui/Input";
 import { Badge } from "../retroui/Badge";
+import { useRoomId } from "@/hooks/useGameStore";
 
 function Settings() {
+  const roomId = useRoomId();
   return (
     <Card className="flex flex-col gap-4 flex-1 w-full p-8">
       <div>
@@ -18,7 +20,7 @@ function Settings() {
         <li className="flex flex-col">
           <div className="flex flex-col gap-4">
             <Label>Room ID</Label>
-            <Badge>CUBE-1234</Badge>
+            <Badge>{roomId}</Badge>
           </div>
         </li>
 

@@ -38,7 +38,7 @@ function App() {
       socket.off("start_round");
       socket.off("round_done");
     };
-  }, []);
+  }, [addMember, setGameState, setScramble, setLeaderboard, setCurrentRound]);
 
   return (
     <BrowserRouter>

@@ -14,7 +14,7 @@ function Lobby() {
   };
 
   return (
-    <main className="h-screen flex align-middle justify-center">
+    <main className="h-screen flex justify-center">
       <div className="p-8 md:min-w-200 flex flex-col gap-4 items-stretch justify-center">
         <div className="w-full flex flex-row gap-4 justify-center items-center">
           <Text as="h1">CubeClash</Text>

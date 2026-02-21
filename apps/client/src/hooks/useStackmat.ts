@@ -76,7 +76,6 @@ function useStackmat(
     function step() {
       const now = performance.now() / 1000;
 
-      console.log(state);
       switch (state) {
         case "INSPECTING":
         case "PRIMING":

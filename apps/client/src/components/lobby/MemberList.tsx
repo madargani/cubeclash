@@ -19,12 +19,6 @@ function MemberList() {
             </Card>
           </li>
         ))}
-        <li className="">
-          <Card className="p-4 flex flex-col md:flex-row items-center gap-4">
-            <div className="size-8 border-3 rounded-lg"></div>
-            <Text className="flex-1">Matt</Text>
-          </Card>
-        </li>
       </ul>
     </div>
   );
