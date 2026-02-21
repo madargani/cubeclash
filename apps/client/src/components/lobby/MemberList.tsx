@@ -7,7 +7,7 @@ function MemberList() {
 
   return (
     <div className="md:flex-1 flex flex-col gap-4">
-      <Text as="h3" className="text-center">
+      <Text as="h3" className="text-center hidden md:block">
         Speed Cubers
       </Text>
       <ul className="flex flex-row md:flex-col gap-4">

@@ -9,7 +9,7 @@ import { useRoomId } from "@/hooks/useGameStore";
 function Settings() {
   const roomId = useRoomId();
   return (
-    <Card className="flex flex-col gap-4 flex-1 w-full p-8">
+    <Card className="flex flex-col gap-4 flex-1 w-full p-8 overflow-y-auto">
       <div>
         <Text as="h3" className="text-center">
           Room Settings
