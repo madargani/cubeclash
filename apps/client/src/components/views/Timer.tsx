@@ -2,6 +2,7 @@ import { useCallback, useEffect } from "react";
 import { useRoomId, useScramble } from "@/hooks/useGameStore";
 import useStackmat from "@/hooks/useStackmat";
 import { socket } from "@/socket";
+import { Text } from "../retroui/Text";
 
 function Timer() {
   const scramble = useScramble();
@@ -72,16 +73,16 @@ function Timer() {
   }, [onKeyDown, onKeyUp, onMouseDown, onMouseUp, onTouchStart, onTouchEnd]);
 
   return (
-    <main className="h-screen p-4 flex flex-col">
-      <p className="text-xl text-center">{scramble}</p>
+    <main className="h-screen p-8 flex flex-col">
+      <Text className="text-xl text-center">{scramble}</Text>
       <div className="flex-1 flex flex-col justify-center">
-        <p
+        <Text
           className={`text-9xl text-center 
-            ${state == "PRIMING" && "text-warning"} 
-            ${state == "READY" && "text-success"}`}
+            ${state == "PRIMING" && "text-destructive"} 
+            ${state == "READY" && "text-primary"}`}
         >
           {display}
-        </p>
+        </Text>
       </div>
     </main>
   );
