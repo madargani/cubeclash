@@ -4,7 +4,7 @@ const rooms = new Map<string, Room>();
 
 function generateRoomId(): string {
   const ID_LENGTH = 8;
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   let id = "";
   for (let i = 0; i < ID_LENGTH; i++)

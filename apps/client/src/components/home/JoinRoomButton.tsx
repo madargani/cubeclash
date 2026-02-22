@@ -28,7 +28,9 @@ function JoinRoomButton() {
               placeholder="Enter room id"
               id="roomId"
               value={roomId}
-              onChange={(e) => setRoomId(e.target.value)}
+              onChange={(e) =>
+                setRoomId(e.target.value.toUpperCase().slice(0, 8))
+              }
             />
           </div>
           <div className="flex-col gap-2">
