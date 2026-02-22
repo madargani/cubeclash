@@ -25,7 +25,7 @@ function JoinRoomButton() {
           <div className="flex-col gap-2">
             <Label htmlFor="roomId">Room Id</Label>
             <Input
-              placeholder="Enter rooom id"
+              placeholder="Enter room id"
               id="roomId"
               value={roomId}
               onChange={(e) => setRoomId(e.target.value)}
