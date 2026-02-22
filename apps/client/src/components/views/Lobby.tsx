@@ -21,7 +21,7 @@ function Lobby() {
           <Text as="h1">CubeClash</Text>
           <div className="size-10 border-4 rounded-xl"></div>
         </div>
-        <div className="flex flex-col md:flex-row flex-1 gap-4 overflow-hidden">
+        <div className="flex flex-col max-h-200 md:flex-row flex-1 gap-4 overflow-hidden">
           <MemberList />
           <Settings />
         </div>
