@@ -4,11 +4,17 @@ import { Input } from "../retroui/Input";
 import { Text } from "../retroui/Text";
 import { useHomeActions } from "@/hooks/useHomeActions";
 import { Label } from "../retroui/Label";
-import { useGameActions, useNickname, useRoomId } from "@/hooks/useGameStore";
+import {
+  useGameActions,
+  useNickname,
+  useRoomId,
+  useHomeError,
+} from "@/hooks/useGameStore";
 
 function JoinRoomButton() {
   const nickname = useNickname();
   const roomId = useRoomId();
+  const homeError = useHomeError();
   const { setNickname, setRoomId } = useGameActions();
   const { handleJoinRoom } = useHomeActions();
 
@@ -42,11 +48,12 @@ function JoinRoomButton() {
               onChange={(e) => setNickname(e.target.value)}
             />
           </div>
+          {homeError && (
+            <Text className="text-red-500 text-sm">{homeError}</Text>
+          )}
         </div>
         <Dialog.Footer>
-          <Dialog.Trigger asChild>
-            <Button onClick={handleJoinRoom}>Join</Button>
-          </Dialog.Trigger>
+          <Button onClick={handleJoinRoom}>Join</Button>
         </Dialog.Footer>
       </Dialog.Content>
     </Dialog>

@@ -6,6 +6,7 @@ interface GameState {
   hostNickname: string;
   roomId: string;
   members: string[];
+  homeError: string | null;
   stage: "lobby" | "timer" | "leaderboard";
   scrambles: string[];
   leaderboard: LeaderboardEntry[];
@@ -17,6 +18,7 @@ interface GameState {
     setMembers: (members: string[]) => void;
     addMember: (nickname: string) => void;
     removeMember: (nickname: string) => void;
+    setHomeError: (error: string | null) => void;
     setStage: (stage: "lobby" | "timer" | "leaderboard") => void;
     addScramble: (scramble: string) => void;
     setLeaderboard: (leaderboard: LeaderboardEntry[]) => void;
@@ -29,6 +31,7 @@ export const useGameStore = create<GameState>()((set) => ({
   hostNickname: "",
   roomId: "",
   members: [],
+  homeError: null,
   stage: "lobby",
   scrambles: [],
   leaderboard: [],
@@ -45,6 +48,7 @@ export const useGameStore = create<GameState>()((set) => ({
       set((state) => ({
         members: state.members.filter((m) => m !== nickname),
       })),
+    setHomeError: (homeError) => set((_state) => ({ homeError })),
     setStage: (stage) => set((_state) => ({ stage: stage })),
     addScramble: (scramble) =>
       set((state) => ({ scrambles: [...state.scrambles, scramble] })),
@@ -95,4 +99,8 @@ export function useGameActions() {
 
 export function useCurrentRound() {
   return useGameStore((state) => state.currentRound);
+}
+
+export function useHomeError() {
+  return useGameStore((state) => state.homeError);
 }

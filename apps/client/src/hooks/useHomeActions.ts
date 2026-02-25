@@ -6,7 +6,7 @@ import { useSocketActions } from "./useSocketActions";
 export function useHomeActions() {
   const nickname = useNickname();
   const roomId = useRoomId();
-  const { setNickname, setMembers, setRoomId, setHostNickname } =
+  const { setNickname, setMembers, setRoomId, setHostNickname, setHomeError } =
     useGameActions();
   const { createRoom, joinRoom } = useSocketActions();
   const navigate = useNavigate();
@@ -14,23 +14,25 @@ export function useHomeActions() {
   const handleCreateRoom = useCallback(() => {
     if (!nickname) return;
     setHostNickname(nickname);
+    setHomeError(null);
     createRoom(nickname, (response) => {
       if (response.status === "error") {
-        console.error("Failed to create room:", response.message);
+        setHomeError(response.message);
         return;
       }
       setRoomId(response.data);
       setMembers([nickname]);
       navigate("/room");
     });
-  }, [nickname, navigate, setNickname, setHostNickname, setRoomId, setMembers, createRoom]);
+  }, [nickname, navigate, setNickname, setHostNickname, setRoomId, setMembers, setHomeError, createRoom]);
 
   const handleJoinRoom = useCallback(() => {
     if (!nickname || !roomId) return;
     setHostNickname("");
+    setHomeError(null);
     joinRoom(nickname, roomId, (response) => {
       if (response.status === "error") {
-        console.error("Failed to join room:", response.message);
+        setHomeError(response.message);
         return;
       }
       setMembers(response.data);
@@ -44,6 +46,7 @@ export function useHomeActions() {
     setHostNickname,
     setRoomId,
     setMembers,
+    setHomeError,
     joinRoom,
   ]);
 
