@@ -16,6 +16,7 @@ interface GameState {
     setRoomId: (roomId: string) => void;
     setMembers: (members: string[]) => void;
     addMember: (nickname: string) => void;
+    removeMember: (nickname: string) => void;
     setStage: (stage: "lobby" | "timer" | "leaderboard") => void;
     addScramble: (scramble: string) => void;
     setLeaderboard: (leaderboard: LeaderboardEntry[]) => void;
@@ -40,6 +41,10 @@ export const useGameStore = create<GameState>()((set) => ({
     setMembers: (members) => set((_state) => ({ members: members })),
     addMember: (nickname) =>
       set((state) => ({ members: [...state.members, nickname] })),
+    removeMember: (nickname) =>
+      set((state) => ({
+        members: state.members.filter((m) => m !== nickname),
+      })),
     setStage: (stage) => set((_state) => ({ stage: stage })),
     addScramble: (scramble) =>
       set((state) => ({ scrambles: [...state.scrambles, scramble] })),

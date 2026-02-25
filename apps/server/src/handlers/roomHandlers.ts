@@ -49,14 +49,30 @@ export function registerRoomHandlers(socket: CubeClashSocket) {
     console.log(`User ${socket.id} joined room ${roomId}`);
   });
 
-  socket.on("disconnect", () => {
-    for (const roomId in socket.rooms) {
-      if (getRoom(roomId)?.hostId == socket.id) {
+  socket.on("disconnecting", () => {
+    for (const roomId of socket.rooms) {
+      // Skip the room matching socket.id (socket.io internal room)
+      if (roomId === socket.id) continue;
+
+      const room = getRoom(roomId);
+      if (!room) continue;
+
+      if (room.hostId == socket.id) {
         deleteRoom(roomId);
         socket.nsp.in(roomId).disconnectSockets(true);
         console.log(`Room ${roomId} deleted`);
       } else {
-        removeMember(roomId, socket.id);
+        // Get member's nickname before removing
+        const member = room.members.find((m) => m.id === socket.id);
+        const nickname = member?.nickname;
+
+        if (nickname) {
+          removeMember(roomId, socket.id);
+          socket.to(roomId).emit("member_left", nickname);
+          console.log(
+            `User ${socket.id} left room ${roomId} (nickname: ${nickname})`,
+          );
+        }
       }
     }
 

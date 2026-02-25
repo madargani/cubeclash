@@ -65,16 +65,18 @@ export function addMember(
   room.members.push(member);
 }
 
-export function removeMember(roomId: string, memberId: string): void {
+export function removeMember(roomId: string, memberId: string): string | undefined {
   const room = rooms.get(roomId);
-  if (!room) return;
+  if (!room) return undefined;
 
   for (let i = 0; i < room.members.length; i++) {
     if (room.members[i]?.id == memberId) {
+      const removedNickname = room.members[i]?.nickname;
       room.members.splice(i, 1);
-      return;
+      return removedNickname;
     }
   }
+  return undefined;
 }
 
 export function startGame(roomId: string): void {
