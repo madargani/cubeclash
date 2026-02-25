@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import { socket } from "@/socket";
-
+import type { SocketCallbackResponse } from "@cubeclash/types";
 
 export function useSocketActions() {
   const createRoom = useCallback(
-    (nickname: string, callback: (roomId: string) => void) => {
+    (nickname: string, callback: (response: SocketCallbackResponse<string>) => void) => {
       socket.emit("create_room", nickname, callback);
     },
     [],
@@ -14,7 +14,7 @@ export function useSocketActions() {
     (
       nickname: string,
       roomId: string,
-      callback: (members: string[] | null) => void,
+      callback: (response: SocketCallbackResponse<string[]>) => void,
     ) => {
       socket.emit("join_room", nickname, roomId, callback);
     },

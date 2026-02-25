@@ -4,6 +4,7 @@ import type {
   ServerToClientEvents,
   InterServerEvents,
   SocketData,
+  SocketCallbackResponse,
 } from "@cubeclash/types";
 import {
   addMember,
@@ -25,7 +26,7 @@ export function registerRoomHandlers(socket: CubeClashSocket) {
     const room = createRoom(socket.id, nickname);
 
     socket.join(room.id);
-    callback(room.id);
+    callback({ status: "success", data: room.id });
 
     console.log(`User ${socket.id} created room ${room.id}`);
   });
@@ -34,7 +35,13 @@ export function registerRoomHandlers(socket: CubeClashSocket) {
     const room = getRoom(roomId);
 
     if (!room) {
-      callback(null);
+      callback({ status: "error", message: "Room not found" });
+      return;
+    }
+
+    // nickname is already used
+    if (room.members.some((member) => member.nickname === nickname)) {
+      callback({ status: "error", message: "Username already taken" });
       return;
     }
 
@@ -42,7 +49,7 @@ export function registerRoomHandlers(socket: CubeClashSocket) {
     addMember(roomId, socket.id, nickname);
 
     const members = room.members.map((member) => member.nickname);
-    callback(members);
+    callback({ status: "success", data: members });
 
     socket.to(roomId).emit("member_joined", nickname);
 

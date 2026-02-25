@@ -14,8 +14,12 @@ export function useHomeActions() {
   const handleCreateRoom = useCallback(() => {
     if (!nickname) return;
     setHostNickname(nickname);
-    createRoom(nickname, (roomId) => {
-      setRoomId(roomId);
+    createRoom(nickname, (response) => {
+      if (response.status === "error") {
+        console.error("Failed to create room:", response.message);
+        return;
+      }
+      setRoomId(response.data);
       setMembers([nickname]);
       navigate("/room");
     });
@@ -24,11 +28,12 @@ export function useHomeActions() {
   const handleJoinRoom = useCallback(() => {
     if (!nickname || !roomId) return;
     setHostNickname("");
-    joinRoom(nickname, roomId, (members) => {
-      if (!members) {
+    joinRoom(nickname, roomId, (response) => {
+      if (response.status === "error") {
+        console.error("Failed to join room:", response.message);
         return;
       }
-      setMembers(members);
+      setMembers(response.data);
       navigate("/room");
     });
   }, [

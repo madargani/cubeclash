@@ -1,3 +1,8 @@
+// Generic response wrapper for socket callbacks
+export type SocketCallbackResponse<T> =
+  | { status: "success"; data: T }
+  | { status: "error"; message: string };
+
 // Leaderboard Types
 export interface LeaderboardEntry {
   rank: number;
@@ -16,11 +21,14 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  create_room: (nickname: string, callback: (roomId: string) => void) => void;
+  create_room: (
+    nickname: string,
+    callback: (response: SocketCallbackResponse<string>) => void,
+  ) => void;
   join_room: (
     nickname: string,
     roomId: string,
-    callback: (members: string[] | null) => void,
+    callback: (response: SocketCallbackResponse<string[]>) => void,
   ) => void;
   start_game: (roomId: string) => void;
   next_round: (roomId: string) => void;
