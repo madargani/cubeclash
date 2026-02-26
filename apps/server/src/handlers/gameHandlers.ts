@@ -52,11 +52,15 @@ function calculateLeaderboard(room: Room): LeaderboardEntry[] {
         ? validTimes.reduce((a, b) => a + b, 0) / validTimes.length
         : null;
 
+    // Calculate best time
+    const best = validTimes.length > 0 ? Math.min(...validTimes) : null;
+
     entries.push({
       rank: 0, // Will be calculated after sorting
       name: member.nickname,
       rounds,
       average,
+      best,
     });
   }
 
@@ -125,10 +129,32 @@ export function registerGameHandlers(
     // If all solvers are done, post results
     if (areAllDone(roomId)) {
       const leaderboard = calculateLeaderboard(room);
-      io.to(roomId).emit("round_done", leaderboard);
-      console.log(`Room ${room.id} results for round ${room.round}:`);
+      const scrambles = room.scrambles;
+
+      // Check if this was the final round (round 4 = 5th round, 0-indexed)
+      if (room.round === 4) {
+        io.to(roomId).emit("game_over", leaderboard, scrambles);
+        console.log(`Room ${room.id} game over after round 5`);
+      } else {
+        io.to(roomId).emit("round_done", leaderboard);
+        console.log(`Room ${room.id} results for round ${room.round}:`);
+      }
+
       for (const entry of leaderboard)
         console.log(`\t${entry.rank}. ${entry.name}: ${entry.average?.toFixed(2) ?? "--"}s`);
     }
+  });
+
+socket.on("reset_game", (roomId) => {
+    const room = getRoom(roomId);
+    if (!room) return;
+
+    // Clear all results and reset round
+    room.results.clear();
+    room.scrambles = [];
+    room.round = -1;
+
+    io.to(roomId).emit("game_reset");
+    console.log(`Room ${roomId} game reset`);
   });
 }

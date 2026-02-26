@@ -7,7 +7,7 @@ type SocketEventHandlers = {
   onMemberLeft?: (nickname: string) => void;
   onStartRound?: (scramble: string, round: number) => void;
   onRoundDone?: (leaderboard: LeaderboardEntry[]) => void;
-  onGameOver?: (leaderboard: LeaderboardEntry[]) => void;
+  onGameOver?: (leaderboard: LeaderboardEntry[], scrambles: string[]) => void;
 };
 
 export function useSocketListeners(handlers: SocketEventHandlers) {
@@ -59,8 +59,8 @@ export function useSocketListeners(handlers: SocketEventHandlers) {
 
   useEffect(() => {
     if (!stableHandlers.onGameOver) return;
-    const handler: ServerToClientEvents["game_over"] = (leaderboard) => {
-      stableHandlers.onGameOver?.(leaderboard);
+    const handler: ServerToClientEvents["game_over"] = (leaderboard, scrambles) => {
+      stableHandlers.onGameOver?.(leaderboard, scrambles);
     };
     socket.on("game_over", handler);
     return () => {

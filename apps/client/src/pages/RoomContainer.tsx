@@ -1,3 +1,5 @@
+import Results from "@/components/views/Results";
+
 import Leaderboard from "@/components/views/Leaderboard";
 import Lobby from "@/components/views/Lobby";
 import Timer from "@/components/views/Timer";
@@ -21,6 +23,8 @@ function RoomContainer() {
       return <Timer />;
     case "leaderboard":
       return <Leaderboard />;
+    case "results":
+      return <Results />;
   }
 }
 

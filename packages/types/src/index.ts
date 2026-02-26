@@ -9,7 +9,9 @@ export interface LeaderboardEntry {
   name: string;
   rounds: (number | null)[];
   average: number | null;
+  best: number | null;
 }
+
 
 // Socket.io Types
 export interface ServerToClientEvents {
@@ -17,7 +19,8 @@ export interface ServerToClientEvents {
   member_left: (nickname: string) => void;
   start_round: (scramble: string, round: number) => void;
   round_done: (leaderboard: LeaderboardEntry[]) => void;
-  game_over: (leaderboard: LeaderboardEntry[]) => void;
+  game_over: (leaderboard: LeaderboardEntry[], scrambles: string[]) => void;
+  game_reset: () => void;
 }
 
 export interface ClientToServerEvents {
@@ -33,6 +36,7 @@ export interface ClientToServerEvents {
   start_game: (roomId: string) => void;
   next_round: (roomId: string) => void;
   submit_solve: (roomId: string, time: number) => void;
+  reset_game: (roomId: string) => void;
 }
 
 export interface InterServerEvents {}

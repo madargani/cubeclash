@@ -33,11 +33,16 @@ export function useSocketActions() {
     socket.emit("submit_solve", roomId, time);
   }, []);
 
+  const resetGame = useCallback((roomId: string) => {
+    socket.emit("reset_game", roomId);
+  }, []);
+
   return {
     createRoom,
     joinRoom,
     startGame,
     nextRound,
     submitSolve,
+    resetGame,
   };
 }

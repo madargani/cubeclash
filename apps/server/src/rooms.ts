@@ -30,6 +30,7 @@ export function createRoom(hostId: string, hostNickname: string): Room {
     members: [host],
     round: -1,
     results: new Map(),
+    scrambles: [],
   };
 
   rooms.set(id, room);

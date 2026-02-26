@@ -9,4 +9,5 @@ export interface Room {
   members: Member[];
   round: number;
   results: Map<string, number[]>;
+  scrambles: string[];
 }

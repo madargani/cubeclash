@@ -7,7 +7,7 @@ interface GameState {
   roomId: string;
   members: string[];
   homeError: string | null;
-  stage: "lobby" | "timer" | "leaderboard";
+  stage: "lobby" | "timer" | "leaderboard" | "results";
   scrambles: string[];
   leaderboard: LeaderboardEntry[];
   currentRound: number;
@@ -19,10 +19,13 @@ interface GameState {
     addMember: (nickname: string) => void;
     removeMember: (nickname: string) => void;
     setHomeError: (error: string | null) => void;
-    setStage: (stage: "lobby" | "timer" | "leaderboard") => void;
+    setStage: (stage: "lobby" | "timer" | "leaderboard" | "results") => void;
     addScramble: (scramble: string) => void;
     setLeaderboard: (leaderboard: LeaderboardEntry[]) => void;
     setCurrentRound: (round: number) => void;
+    clearScrambles: () => void;
+    setScrambles: (scrambles: string[]) => void;
+    resetGameState: () => void;
   };
 }
 
@@ -55,6 +58,15 @@ export const useGameStore = create<GameState>()((set) => ({
     setLeaderboard: (leaderboard) =>
       set((_state) => ({ leaderboard: leaderboard })),
     setCurrentRound: (round) => set((_state) => ({ currentRound: round })),
+    clearScrambles: () => set((_state) => ({ scrambles: [] })),
+    setScrambles: (scrambles) => set((_state) => ({ scrambles })),
+    resetGameState: () =>
+      set((_state) => ({
+        stage: "lobby",
+        scrambles: [],
+        leaderboard: [],
+        currentRound: -1,
+      })),
   },
 }));
 
