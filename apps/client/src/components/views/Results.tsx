@@ -5,6 +5,23 @@ import { Text } from "../retroui/Text";
 import { Table } from "../retroui/Table";
 import { Button } from "../retroui/Button";
 
+function formatSolves(rounds: (number | null)[]): string {
+  const validTimes = rounds.filter((t): t is number => t !== null);
+  if (validTimes.length === 0) return "--";
+
+  const best = Math.min(...validTimes);
+  const worst = Math.max(...validTimes);
+
+  return rounds
+    .map((time) => {
+      if (time === null) return "--";
+      if (time === best) return `(${formatTime(time)})`;
+      if (time === worst) return `(${formatTime(time)})`;
+      return formatTime(time);
+    })
+    .join(" | ");
+}
+
 function Results() {
   const leaderboard = useLeaderboard();
   const scrambles = useScrambles();
@@ -32,6 +49,7 @@ function Results() {
             <Table.Row>
               <Table.Head>Rank</Table.Head>
               <Table.Head>Name</Table.Head>
+              <Table.Head>Solves</Table.Head>
               <Table.Head>Average</Table.Head>
             </Table.Row>
           </Table.Header>
@@ -40,6 +58,7 @@ function Results() {
               <Table.Row key={entry.name}>
                 <Table.Cell>{entry.rank}</Table.Cell>
                 <Table.Cell>{entry.name}</Table.Cell>
+                <Table.Cell className="text-sm">{formatSolves(entry.rounds)}</Table.Cell>
                 <Table.Cell>{formatTime(entry.average)}</Table.Cell>
               </Table.Row>
             ))}
