@@ -2,9 +2,9 @@ import {
   useLeaderboard,
   useScrambles,
   useNickname,
+  useGameActions,
 } from "@/hooks/useGameStore";
 import { formatTime } from "@/lib/utils";
-import { useRoom } from "@/hooks/useRoom";
 import { Text } from "../retroui/Text";
 import { Table } from "../retroui/Table";
 import { Button } from "../retroui/Button";
@@ -30,7 +30,7 @@ function Results() {
   const leaderboard = useLeaderboard();
   const scrambles = useScrambles();
   const nickname = useNickname();
-  const { resetGame } = useRoom();
+  const { setStage } = useGameActions();
 
   // Find current user's entry in leaderboard
   const currentUser = leaderboard.find((entry) => entry.name === nickname);
@@ -38,9 +38,7 @@ function Results() {
   // Get top 5 placers
   const top5 = leaderboard.slice(0, 5);
 
-  const handlePlayAgain = () => {
-    resetGame();
-  };
+  const handlePlayAgain = () => setStage("lobby");
 
   return (
     <main className="h-screen flex items-center justify-center">

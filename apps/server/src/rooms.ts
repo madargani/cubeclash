@@ -66,7 +66,10 @@ export function addMember(
   room.members.push(member);
 }
 
-export function removeMember(roomId: string, memberId: string): string | undefined {
+export function removeMember(
+  roomId: string,
+  memberId: string,
+): string | undefined {
   const room = rooms.get(roomId);
   if (!room) return undefined;
 
@@ -86,6 +89,7 @@ export function startGame(roomId: string): void {
 
   for (const member of room.members) room.results.set(member.id, []);
   room.round = 0;
+  room.scrambles = [];
 }
 
 export function addResult(

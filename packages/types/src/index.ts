@@ -12,7 +12,6 @@ export interface LeaderboardEntry {
   best: number | null;
 }
 
-
 // Socket.io Types
 export interface ServerToClientEvents {
   member_joined: (nickname: string) => void;
@@ -20,7 +19,6 @@ export interface ServerToClientEvents {
   start_round: (scramble: string, round: number) => void;
   round_done: (leaderboard: LeaderboardEntry[]) => void;
   game_over: (leaderboard: LeaderboardEntry[], scrambles: string[]) => void;
-  game_reset: () => void;
 }
 
 export interface ClientToServerEvents {
@@ -36,7 +34,6 @@ export interface ClientToServerEvents {
   start_game: (roomId: string) => void;
   next_round: (roomId: string) => void;
   submit_solve: (roomId: string, time: number) => void;
-  reset_game: (roomId: string) => void;
 }
 
 export interface InterServerEvents {}

@@ -25,7 +25,6 @@ interface GameState {
     setCurrentRound: (round: number) => void;
     clearScrambles: () => void;
     setScrambles: (scrambles: string[]) => void;
-    resetGameState: () => void;
   };
 }
 
@@ -60,13 +59,6 @@ export const useGameStore = create<GameState>()((set) => ({
     setCurrentRound: (round) => set((_state) => ({ currentRound: round })),
     clearScrambles: () => set((_state) => ({ scrambles: [] })),
     setScrambles: (scrambles) => set((_state) => ({ scrambles })),
-    resetGameState: () =>
-      set((_state) => ({
-        stage: "lobby",
-        scrambles: [],
-        leaderboard: [],
-        currentRound: -1,
-      })),
   },
 }));
 

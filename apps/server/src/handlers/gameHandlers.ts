@@ -91,7 +91,9 @@ export function registerGameHandlers(
     if (room.hostId != socket.id) return;
 
     startGame(room.id);
-    io.to(roomId).emit("start_round", await generateScramble(), 0);
+    const scramble = await generateScramble();
+    room.scrambles.push(scramble);
+    io.to(roomId).emit("start_round", scramble, 0);
 
     console.log(`Room ${roomId} started game`);
   });
@@ -103,7 +105,9 @@ export function registerGameHandlers(
     if (room.hostId != socket.id) return;
 
     if (!canStartNextRound(roomId)) {
-      console.log(`Room ${roomId} attempted to start next round but max rounds reached`);
+      console.log(
+        `Room ${roomId} attempted to start next round but max rounds reached`,
+      );
       return;
     }
 
@@ -111,7 +115,9 @@ export function registerGameHandlers(
     if (!success) return;
 
     const currentRound = getCurrentRound(roomId);
-    io.to(roomId).emit("start_round", await generateScramble(), currentRound);
+    const scramble = await generateScramble();
+    room.scrambles.push(scramble);
+    io.to(roomId).emit("start_round", scramble, currentRound);
 
     console.log(`Room ${roomId} started round ${currentRound + 1}`);
   });
@@ -139,22 +145,6 @@ export function registerGameHandlers(
         io.to(roomId).emit("round_done", leaderboard);
         console.log(`Room ${room.id} results for round ${room.round}:`);
       }
-
-      for (const entry of leaderboard)
-        console.log(`\t${entry.rank}. ${entry.name}: ${entry.average?.toFixed(2) ?? "--"}s`);
     }
-  });
-
-socket.on("reset_game", (roomId) => {
-    const room = getRoom(roomId);
-    if (!room) return;
-
-    // Clear all results and reset round
-    room.results.clear();
-    room.scrambles = [];
-    room.round = -1;
-
-    io.to(roomId).emit("game_reset");
-    console.log(`Room ${roomId} game reset`);
   });
 }

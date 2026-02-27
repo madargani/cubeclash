@@ -4,7 +4,10 @@ import type { SocketCallbackResponse } from "@cubeclash/types";
 
 export function useSocketActions() {
   const createRoom = useCallback(
-    (nickname: string, callback: (response: SocketCallbackResponse<string>) => void) => {
+    (
+      nickname: string,
+      callback: (response: SocketCallbackResponse<string>) => void,
+    ) => {
       socket.emit("create_room", nickname, callback);
     },
     [],
@@ -33,16 +36,11 @@ export function useSocketActions() {
     socket.emit("submit_solve", roomId, time);
   }, []);
 
-  const resetGame = useCallback((roomId: string) => {
-    socket.emit("reset_game", roomId);
-  }, []);
-
   return {
     createRoom,
     joinRoom,
     startGame,
     nextRound,
     submitSolve,
-    resetGame,
   };
 }
