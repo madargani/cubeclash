@@ -1,4 +1,8 @@
-import { useLeaderboard, useScrambles, useNickname } from "@/hooks/useGameStore";
+import {
+  useLeaderboard,
+  useScrambles,
+  useNickname,
+} from "@/hooks/useGameStore";
 import { formatTime } from "@/lib/utils";
 import { useRoom } from "@/hooks/useRoom";
 import { Text } from "../retroui/Text";
@@ -58,18 +62,22 @@ function Results() {
               <Table.Row key={entry.name}>
                 <Table.Cell>{entry.rank}</Table.Cell>
                 <Table.Cell>{entry.name}</Table.Cell>
-                <Table.Cell className="text-sm">{formatSolves(entry.rounds)}</Table.Cell>
+                <Table.Cell className="text-sm">
+                  {formatSolves(entry.rounds)}
+                </Table.Cell>
                 <Table.Cell>{formatTime(entry.average)}</Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>
         </Table>
 
-        {/* Current User Stats */}
+        {/* Current User Stats with Solves */}
         {currentUser && (
           <div className="flex flex-col gap-2 w-full mt-4">
-            <Text as="h2" className="text-xl">Your Stats</Text>
-            <div className="flex gap-8">
+            <Text as="h2" className="text-xl">
+              Your Stats
+            </Text>
+            <div className="flex gap-8 mb-4">
               <div>
                 <Text className="text-sm opacity-70">Average</Text>
                 <Text>{formatTime(currentUser.average)}</Text>
@@ -79,35 +87,37 @@ function Results() {
                 <Text>{formatTime(currentUser.best)}</Text>
               </div>
             </div>
-          </div>
-        )}
 
-        {/* Scrambles with User Times */}
-        {scrambles.length > 0 && currentUser && (
-          <div className="flex flex-col gap-2 w-full mt-4">
-            <Text as="h2" className="text-xl">Your Solves</Text>
-            <Table>
-              <Table.Header>
-                <Table.Row>
-                  <Table.Head>Round</Table.Head>
-                  <Table.Head>Scramble</Table.Head>
-                  <Table.Head>Time</Table.Head>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {scrambles.map((scramble, idx) => (
-                  <Table.Row key={idx}>
-                    <Table.Cell>{idx + 1}</Table.Cell>
-                    <Table.Cell className="max-w-48 truncate">{scramble}</Table.Cell>
-                    <Table.Cell>{formatTime(currentUser.rounds[idx])}</Table.Cell>
+            {scrambles.length > 0 && (
+              <Table>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.Head>Round</Table.Head>
+                    <Table.Head>Scramble</Table.Head>
+                    <Table.Head>Time</Table.Head>
                   </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
+                </Table.Header>
+                <Table.Body>
+                  {scrambles.map((scramble, idx) => (
+                    <Table.Row key={idx}>
+                      <Table.Cell>{idx + 1}</Table.Cell>
+                      <Table.Cell className="max-w-48 truncate">
+                        {scramble}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {formatTime(currentUser.rounds[idx])}
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table>
+            )}
           </div>
         )}
 
-        <Button onClick={handlePlayAgain}>Play Again</Button>
+        <Button className="self-end" onClick={handlePlayAgain}>
+          Play Again
+        </Button>
       </div>
     </main>
   );
