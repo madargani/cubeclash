@@ -12,6 +12,7 @@ import {
   deleteRoom,
   getRoom,
   removeMember,
+  updateSettings,
 } from "../rooms.js";
 
 type CubeClashSocket = Socket<
@@ -54,6 +55,23 @@ export function registerRoomHandlers(socket: CubeClashSocket) {
     socket.to(roomId).emit("member_joined", nickname);
 
     console.log(`User ${socket.id} joined room ${roomId}`);
+  });
+
+  socket.on("update_settings", (roomId, settings) => {
+    const room = getRoom(roomId);
+
+    if (!room) return;
+
+    // Only host can change settings
+    if (room.hostId !== socket.id) return;
+
+    const success = updateSettings(roomId, settings);
+    if (!success) return;
+
+    // Broadcast to all including sender
+    socket.nsp.in(roomId).emit("settings_changed", settings);
+
+    console.log(`Settings updated in room ${roomId} by ${socket.id}`);
   });
 
   socket.on("disconnecting", () => {

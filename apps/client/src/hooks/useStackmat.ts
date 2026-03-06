@@ -100,7 +100,7 @@ function useStackmat(
 
         case "STOPPED":
           const seconds = finalTime.current;
-          setDisplay(seconds.toFixed(2));
+          if (seconds > 0) setDisplay(seconds.toFixed(2));
           return;
       }
 

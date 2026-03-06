@@ -91,7 +91,7 @@ export function registerGameHandlers(
     if (room.hostId != socket.id) return;
 
     startGame(room.id);
-    const scramble = await generateScramble();
+    const scramble = await generateScramble(room.settings.event);
     room.scrambles.push(scramble);
     io.to(roomId).emit("start_round", scramble, 0);
 
@@ -115,7 +115,7 @@ export function registerGameHandlers(
     if (!success) return;
 
     const currentRound = getCurrentRound(roomId);
-    const scramble = await generateScramble();
+    const scramble = await generateScramble(room.settings.event);
     room.scrambles.push(scramble);
     io.to(roomId).emit("start_round", scramble, currentRound);
 

@@ -4,10 +4,17 @@ import { Label } from "../retroui/Label";
 import { Select } from "../retroui/Select";
 import { Input } from "../retroui/Input";
 import { Badge } from "../retroui/Badge";
-import { useRoomId } from "@/hooks/useGameStore";
+import { useRoomId, useSettings, useIsHost } from "@/hooks/useGameStore";
+import { useSocketActions } from "@/hooks/useSocketActions";
+import { ROOM_EVENT_OPTIONS, ROUND_OPTIONS } from "@cubeclash/types";
+import type { RoomEvent, RoundOption } from "@cubeclash/types";
 
 function Settings() {
   const roomId = useRoomId();
+  const settings = useSettings();
+  const isHost = useIsHost();
+  const { updateSettings } = useSocketActions();
+
   return (
     <Card className="flex flex-col gap-4 flex-1 w-full p-8 overflow-y-auto">
       <div>
@@ -27,14 +34,26 @@ function Settings() {
         <li className="flex flex-col">
           <div className="flex flex-col gap-4">
             <Label>Event</Label>
-            <Select defaultValue="3x3">
+            <Select
+              value={settings.event}
+              onValueChange={(value) =>
+                updateSettings(roomId, {
+                  ...settings,
+                  event: value as RoomEvent,
+                })
+              }
+              disabled={!isHost}
+            >
               <Select.Trigger>
                 <Select.Value></Select.Value>
               </Select.Trigger>
               <Select.Content>
                 <Select.Group>
-                  <Select.Item value="3x3">3x3</Select.Item>
-                  <Select.Item value="4x4">4x4</Select.Item>
+                  {ROOM_EVENT_OPTIONS.map((event) => (
+                    <Select.Item key={event} value={event}>
+                      {event}
+                    </Select.Item>
+                  ))}
                 </Select.Group>
               </Select.Content>
             </Select>
@@ -44,14 +63,26 @@ function Settings() {
         <li>
           <div className="flex flex-col gap-4">
             <Label>Rounds</Label>
-            <Select defaultValue="5">
+            <Select
+              value={String(settings.rounds)}
+              onValueChange={(value) =>
+                updateSettings(roomId, {
+                  ...settings,
+                  rounds: Number(value) as RoundOption,
+                })
+              }
+              disabled={!isHost}
+            >
               <Select.Trigger>
                 <Select.Value></Select.Value>
               </Select.Trigger>
               <Select.Content>
                 <Select.Group>
-                  <Select.Item value="5">5</Select.Item>
-                  <Select.Item value="12">12</Select.Item>
+                  {ROUND_OPTIONS.map((round) => (
+                    <Select.Item key={round} value={String(round)}>
+                      {round}
+                    </Select.Item>
+                  ))}
                 </Select.Group>
               </Select.Content>
             </Select>
@@ -63,8 +94,16 @@ function Settings() {
             <Label>Scramble + Inspection Time</Label>
             <Input
               type="number"
-              defaultValue={60}
+              value={settings.inspectionTime}
+              onChange={(e) =>
+                updateSettings(roomId, {
+                  ...settings,
+                  inspectionTime: Number(e.target.value),
+                })
+              }
+              disabled={!isHost}
               placeholder="Enter time in seconds"
+              className={`${!isHost && "disabled:opacity-50"}`}
             />
           </div>
         </li>

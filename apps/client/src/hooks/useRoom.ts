@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useSocketListeners } from "./useSocketListeners";
 import { useSocketActions } from "./useSocketActions";
 import { useGameActions } from "./useGameStore";
+import type { RoomSettings } from "@cubeclash/types";
 
 export function useRoom() {
   const {
@@ -13,6 +14,7 @@ export function useRoom() {
     setCurrentRound,
     clearScrambles,
     setScrambles,
+    setSettings,
   } = useGameActions();
   const actions = useSocketActions();
 
@@ -40,6 +42,9 @@ export function useRoom() {
         setScrambles(scrambles);
         setStage("results");
       },
+      onSettingsChanged: (settings: RoomSettings) => {
+        setSettings(settings);
+      },
     }),
     [
       addMember,
@@ -48,7 +53,9 @@ export function useRoom() {
       addScramble,
       setLeaderboard,
       setCurrentRound,
+      clearScrambles,
       setScrambles,
+      setSettings,
     ],
   );
 

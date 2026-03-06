@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { socket } from "@/socket";
-import type { SocketCallbackResponse } from "@cubeclash/types";
+import type { RoomSettings, SocketCallbackResponse } from "@cubeclash/types";
 
 export function useSocketActions() {
   const createRoom = useCallback(
@@ -28,6 +28,10 @@ export function useSocketActions() {
     socket.emit("start_game", roomId);
   }, []);
 
+  const updateSettings = useCallback((roomId: string, settings: RoomSettings) => {
+    socket.emit("update_settings", roomId, settings);
+  }, []);
+
   const nextRound = useCallback((roomId: string) => {
     socket.emit("next_round", roomId);
   }, []);
@@ -40,6 +44,7 @@ export function useSocketActions() {
     createRoom,
     joinRoom,
     startGame,
+    updateSettings,
     nextRound,
     submitSolve,
   };

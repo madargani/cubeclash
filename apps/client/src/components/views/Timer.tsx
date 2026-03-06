@@ -3,11 +3,13 @@ import { useRoomId, useCurrentScramble } from "@/hooks/useGameStore";
 import useStackmat from "@/hooks/useStackmat";
 import { useRoom } from "@/hooks/useRoom";
 import { Text } from "../retroui/Text";
+import { useSettings } from "@/hooks/useGameStore";
 
 function Timer() {
   const scramble = useCurrentScramble();
+  const { inspectionTime } = useSettings();
   const { state, display, finalTime, handleHandsDown, handleHandsUp } =
-    useStackmat();
+    useStackmat(inspectionTime);
   const roomId = useRoomId();
   const { submitSolve } = useRoom();
 

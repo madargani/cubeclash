@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { LeaderboardEntry } from "@cubeclash/types";
+import { DEFAULT_ROOM_SETTINGS, type LeaderboardEntry, type RoomSettings } from "@cubeclash/types";
 
 interface GameState {
   nickname: string;
@@ -11,6 +11,7 @@ interface GameState {
   scrambles: string[];
   leaderboard: LeaderboardEntry[];
   currentRound: number;
+  settings: RoomSettings;
   actions: {
     setNickname: (nickname: string) => void;
     setHostNickname: (hostNickname: string) => void;
@@ -23,6 +24,7 @@ interface GameState {
     addScramble: (scramble: string) => void;
     setLeaderboard: (leaderboard: LeaderboardEntry[]) => void;
     setCurrentRound: (round: number) => void;
+    setSettings: (settings: RoomSettings) => void;
     clearScrambles: () => void;
     setScrambles: (scrambles: string[]) => void;
   };
@@ -38,6 +40,7 @@ export const useGameStore = create<GameState>()((set) => ({
   scrambles: [],
   leaderboard: [],
   currentRound: -1,
+  settings: DEFAULT_ROOM_SETTINGS,
   actions: {
     setNickname: (nickname) => set((_state) => ({ nickname: nickname })),
     setHostNickname: (hostNickname) =>
@@ -59,6 +62,7 @@ export const useGameStore = create<GameState>()((set) => ({
     setCurrentRound: (round) => set((_state) => ({ currentRound: round })),
     clearScrambles: () => set((_state) => ({ scrambles: [] })),
     setScrambles: (scrambles) => set((_state) => ({ scrambles })),
+    setSettings: (settings) => set((_state) => ({ settings })),
   },
 }));
 
@@ -107,4 +111,8 @@ export function useCurrentRound() {
 
 export function useHomeError() {
   return useGameStore((state) => state.homeError);
+}
+
+export function useSettings() {
+  return useGameStore((state) => state.settings);
 }

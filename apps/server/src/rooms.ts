@@ -1,4 +1,5 @@
-import type { Member, Room } from "./types/index.ts";
+import type { Member, Room, RoomSettings } from "./types/index.ts";
+import { DEFAULT_ROOM_SETTINGS } from "@cubeclash/types";
 
 const rooms = new Map<string, Room>();
 
@@ -31,6 +32,7 @@ export function createRoom(hostId: string, hostNickname: string): Room {
     round: -1,
     results: new Map(),
     scrambles: [],
+    settings: { ...DEFAULT_ROOM_SETTINGS } as RoomSettings,
   };
 
   rooms.set(id, room);
@@ -136,5 +138,20 @@ export function incrementRound(roomId: string): boolean {
   if (!room) return false;
   if (room.round >= 4) return false;
   room.round += 1;
+  return true;
+}
+
+export function updateSettings(roomId: string, settings: RoomSettings): boolean {
+  const room = rooms.get(roomId);
+  if (!room) return false;
+
+  // Don't allow settings changes when game is in progress
+  if (room.round >= 0) return false;
+
+  // Validate settings values
+  if (settings.rounds < 1) return false;
+  if (settings.inspectionTime < 0) return false;
+
+  room.settings = settings;
   return true;
 }

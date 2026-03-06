@@ -1,3 +1,6 @@
+import type { RoomSettings } from "@cubeclash/types";
+export type { RoomSettings };
+
 export interface Member {
   id: string;
   nickname: string;
@@ -10,4 +13,5 @@ export interface Room {
   round: number;
   results: Map<string, number[]>;
   scrambles: string[];
+  settings: RoomSettings;
 }

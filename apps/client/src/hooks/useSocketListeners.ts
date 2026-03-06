@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { socket } from "@/socket";
-import type { ServerToClientEvents, LeaderboardEntry } from "@cubeclash/types";
+import type { ServerToClientEvents, LeaderboardEntry, RoomSettings } from "@cubeclash/types";
 
 type SocketEventHandlers = {
   onMemberJoined?: (nickname: string) => void;
@@ -8,6 +8,7 @@ type SocketEventHandlers = {
   onStartRound?: (scramble: string, round: number) => void;
   onRoundDone?: (leaderboard: LeaderboardEntry[]) => void;
   onGameOver?: (leaderboard: LeaderboardEntry[], scrambles: string[]) => void;
+  onSettingsChanged?: (settings: RoomSettings) => void;
 };
 
 export function useSocketListeners(handlers: SocketEventHandlers) {
@@ -67,4 +68,15 @@ export function useSocketListeners(handlers: SocketEventHandlers) {
       socket.off("game_over", handler);
     };
   }, [stableHandlers.onGameOver]);
+
+  useEffect(() => {
+    if (!stableHandlers.onSettingsChanged) return;
+    const handler: ServerToClientEvents["settings_changed"] = (settings) => {
+      stableHandlers.onSettingsChanged?.(settings);
+    };
+    socket.on("settings_changed", handler);
+    return () => {
+      socket.off("settings_changed", handler);
+    };
+  }, [stableHandlers.onSettingsChanged]);
 }
