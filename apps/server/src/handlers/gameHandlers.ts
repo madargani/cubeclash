@@ -39,20 +39,26 @@ function calculateLeaderboard(room: Room): LeaderboardEntry[] {
     const times = room.results.get(member.id) || [];
     const rounds: (number | null)[] = [];
 
-    // Fill rounds 1-5 with times or null
-    for (let i = 0; i < 5; i++) {
-      const time = i < times.length ? times[i] : undefined;
-      rounds.push(time ?? null);
+    // Fill rounds with times or null
+    for (let i = 0; i < room.settings.rounds; i++) {
+      rounds.push(times[i] || null);
     }
 
-    // Calculate average if at least one time exists
-    const validTimes = times.filter((t) => t !== undefined);
-    const average =
-      validTimes.length > 0
-        ? validTimes.reduce((a, b) => a + b, 0) / validTimes.length
-        : null;
+    // Calculate average if all rounds done
+    let average = null;
+    if (times.length == room.settings.rounds) {
+      const validTimes = times.filter((x) => x > 0);
+      if (validTimes.length >= room.settings.rounds - 1) {
+        // Remove best and worst time
+        if (validTimes.length == room.settings.rounds) validTimes.pop();
+        validTimes.shift();
+
+        average = validTimes.reduce((sum, x) => sum + x) / validTimes.length;
+      }
+    }
 
     // Calculate best time
+    const validTimes = times.filter((x) => x > 0);
     const best = validTimes.length > 0 ? Math.min(...validTimes) : null;
 
     entries.push({

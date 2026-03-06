@@ -8,6 +8,8 @@ export function cn(...inputs: ClassValue[]) {
 export function formatTime(seconds: number | null): string {
   if (seconds === null) return "--";
 
+  if (seconds < 0) return "DNF";
+
   if (seconds < 60) {
     // Less than 1 minute: show as SS.XX
     return seconds.toFixed(2);

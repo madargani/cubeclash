@@ -13,14 +13,24 @@ function formatSolves(rounds: (number | null)[]): string {
   const validTimes = rounds.filter((t): t is number => t !== null);
   if (validTimes.length === 0) return "--";
 
-  const best = Math.min(...validTimes);
-  const worst = Math.max(...validTimes);
+  // Get index of best and worst times
+  // worst index is dnf if there is a dnf
+  const best = validTimes.reduce((bestIndex, x, i) => {
+    if (x > 0 && (bestIndex < 0 || x < validTimes[bestIndex])) return i;
+    return bestIndex;
+  }, -1);
+  const worst = validTimes.indexOf(
+    validTimes.some((x) => x < 0)
+      ? Math.min(...validTimes)
+      : Math.max(...validTimes),
+  );
+  console.log(best);
 
   return rounds
-    .map((time) => {
+    .map((time, index) => {
       if (time === null) return "--";
-      if (time === best) return `(${formatTime(time)})`;
-      if (time === worst) return `(${formatTime(time)})`;
+      if (index === best) return `(${formatTime(time)})`;
+      if (index === worst) return `(${formatTime(time)})`;
       return formatTime(time);
     })
     .join(" | ");
