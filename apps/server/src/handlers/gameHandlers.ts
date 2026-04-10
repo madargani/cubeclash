@@ -50,9 +50,11 @@ function calculateLeaderboard(room: Room): LeaderboardEntry[] {
       const validTimes = times.filter((x) => x > 0);
       if (validTimes.length >= room.settings.rounds - 1) {
         // Remove best and worst time
+        validTimes.sort();
         if (validTimes.length == room.settings.rounds) validTimes.pop();
         validTimes.shift();
 
+        console.log(validTimes);
         average = validTimes.reduce((sum, x) => sum + x) / validTimes.length;
       }
     }
