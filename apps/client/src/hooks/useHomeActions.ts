@@ -14,6 +14,7 @@ export function useHomeActions() {
   const handleCreateRoom = useCallback((fallbackUsername?: string) => {
     const finalNickname = nickname || fallbackUsername;
     if (!finalNickname) return;
+    setNickname(finalNickname);
     setHostNickname(finalNickname);
     setHomeError(null);
     createRoom(finalNickname, (response) => {
@@ -30,6 +31,7 @@ export function useHomeActions() {
   const handleJoinRoom = useCallback((fallbackUsername?: string) => {
     const finalNickname = nickname || fallbackUsername;
     if (!finalNickname || !roomId) return;
+    setNickname(finalNickname);
     setHostNickname("");
     setHomeError(null);
     joinRoom(finalNickname, roomId, (response) => {
