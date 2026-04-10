@@ -10,7 +10,7 @@ interface useStackmatReturn {
 
 function useStackmat(
   inspectionTime: number = 60,
-  primingTime: number = 1,
+  primingTime: number = 0.5,
 ): useStackmatReturn {
   const [state, setState] = useState<
     "INSPECTING" | "PRIMING" | "READY" | "SOLVING" | "STOPPED"
