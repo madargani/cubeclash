@@ -11,26 +11,28 @@ export function useHomeActions() {
   const { createRoom, joinRoom } = useSocketActions();
   const navigate = useNavigate();
 
-  const handleCreateRoom = useCallback(() => {
-    if (!nickname) return;
-    setHostNickname(nickname);
+  const handleCreateRoom = useCallback((fallbackUsername?: string) => {
+    const finalNickname = nickname || fallbackUsername;
+    if (!finalNickname) return;
+    setHostNickname(finalNickname);
     setHomeError(null);
-    createRoom(nickname, (response) => {
+    createRoom(finalNickname, (response) => {
       if (response.status === "error") {
         setHomeError(response.message);
         return;
       }
       setRoomId(response.data);
-      setMembers([nickname]);
+      setMembers([finalNickname]);
       navigate("/room");
     });
   }, [nickname, navigate, setNickname, setHostNickname, setRoomId, setMembers, setHomeError, createRoom]);
 
-  const handleJoinRoom = useCallback(() => {
-    if (!nickname || !roomId) return;
+  const handleJoinRoom = useCallback((fallbackUsername?: string) => {
+    const finalNickname = nickname || fallbackUsername;
+    if (!finalNickname || !roomId) return;
     setHostNickname("");
     setHomeError(null);
-    joinRoom(nickname, roomId, (response) => {
+    joinRoom(finalNickname, roomId, (response) => {
       if (response.status === "error") {
         setHomeError(response.message);
         return;

@@ -54,7 +54,6 @@ function calculateLeaderboard(room: Room): LeaderboardEntry[] {
         if (validTimes.length == room.settings.rounds) validTimes.pop();
         validTimes.shift();
 
-        console.log(validTimes);
         average = validTimes.reduce((sum, x) => sum + x) / validTimes.length;
       }
     }

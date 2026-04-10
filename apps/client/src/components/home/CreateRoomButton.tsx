@@ -3,6 +3,7 @@ import { Dialog } from "../retroui/Dialog";
 import { Input } from "../retroui/Input";
 import { Text } from "../retroui/Text";
 import { useHomeActions } from "@/hooks/useHomeActions";
+import { useRandomUsername } from "@/hooks/useRandomUsername";
 import { Label } from "../retroui/Label";
 import {
   useGameActions,
@@ -15,6 +16,7 @@ function CreateRoomButton() {
   const homeError = useHomeError();
   const { setNickname } = useGameActions();
   const { handleCreateRoom } = useHomeActions();
+  const randomPlaceholder = useRandomUsername();
 
   return (
     <Dialog>
@@ -29,7 +31,7 @@ function CreateRoomButton() {
           <div className="flex-col gap-2">
             <Label htmlFor="nickname">Nickname</Label>
             <Input
-              placeholder="Enter a nickname"
+              placeholder={randomPlaceholder}
               id="nickname"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
@@ -40,7 +42,7 @@ function CreateRoomButton() {
           )}
         </div>
         <Dialog.Footer>
-          <Button onClick={handleCreateRoom}>Create</Button>
+          <Button onClick={() => handleCreateRoom(randomPlaceholder)}>Create</Button>
         </Dialog.Footer>
       </Dialog.Content>
     </Dialog>
