@@ -97,6 +97,9 @@ export function registerGameHandlers(
     if (!room) return;
     if (room.hostId != socket.id) return;
 
+    // check if game already started
+    if (room.scrambles.length > 0) return;
+
     startGame(room.id);
     const scramble = await generateScramble(room.settings.event);
     room.scrambles.push(scramble);
