@@ -1,6 +1,7 @@
-# cubeclash
+# CubeClash
 
-An online speecube battling platform.
+A virtual speedcube competition platform. Compete with friends in synchronized 
+speedcubing races with live timing, scrambles, and results.
 
 Built on [TanStack Start](https://tanstack.com/start) (React + Vite) with [Tailwind CSS v4](https://tailwindcss.com/).
 
