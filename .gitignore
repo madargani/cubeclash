@@ -1,5 +1,8 @@
 node_modules
 .DS_Store
+local.db
+local.db-wal
+local.db-shm
 dist
 dist-ssr
 *.local
