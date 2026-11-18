@@ -175,6 +175,9 @@ importers:
 
   .:
     dependencies:
+      '@cubingcenter/scrambler':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@libsql/client':
         specifier: ^0.18.0
         version: 0.18.0
@@ -205,6 +208,9 @@ importers:
       tailwindcss:
         specifier: 4.3.5
         version: 4.3.5
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       '@tanstack/devtools-vite':
         specifier: 0.8.6
@@ -305,6 +311,10 @@ packages:
   '@babel/types@7.29.14':
     resolution: {integrity: sha512-UjI/dKmwJwT9pOszJitq2G6EObZPnsZUfdCr92z2TlF3EZK9J3EdfOKUrCzHl6wFthbzwhzl1Soc/UIwxRiq6w==}
     engines: {node: '>=6.9.0'}
+
+  '@cubingcenter/scrambler@2.0.0':
+    resolution: {integrity: sha512-i5ST4IMTjq/m3iN1U41bW9yAU8A/Dtjv3ur0QjHds4jPCI55OIa84OmdJL1CfXn7n6yBKS/bm0GJQVxIQ9Tfnw==}
+    hasBin: true
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
@@ -2294,6 +2304,8 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.29.14
       '@babel/helper-validator-identifier': 7.29.7
+
+  '@cubingcenter/scrambler@2.0.0': {}
 
   '@drizzle-team/brocli@0.10.2': {}
 

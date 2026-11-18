@@ -31,11 +31,13 @@ The dev server serves the app at <http://localhost:3000> with server-side render
 | `pnpm db:generate` | `drizzle-kit generate` | Generate SQL migrations from `src/db/schema.ts` into `drizzle/` |
 | `pnpm db:migrate` | `drizzle-kit migrate` | Apply migrations in `drizzle/` to the database at `DATABASE_URL` |
 | `pnpm db:studio` | `drizzle-kit studio` | Open Drizzle Studio to browse the database at `DATABASE_URL` |
-| `pnpm test` | `vitest run` | Run the schema constraint tests against a temporary database |
+| `pnpm test` | `vitest run` | Run all test suites (schema constraints, migrations, room settings, identity, rooms, battles) against temporary databases |
 
 ## Project layout
 
-- `src/routes/` — file-based routes; `__root.tsx` is the document shell, `index.tsx` is the home page
+- `src/routes/` — file-based routes; `__root.tsx` is the document shell, `index.tsx` is the home page with the create/join forms, `rooms/$roomId.tsx` is the room page
+- `src/server/` — service modules (`identity.ts`, `rooms.ts`, `battles.ts`) plus the thin TanStack Start server-function wrappers (`fns.ts`) and the cookie session helper (`session.ts`)
+- `src/lib/room-settings.ts` — the Zod schema for room settings (bounds, defaults, supported events)
 - `src/styles.css` — global stylesheet (Tailwind v4 is configured entirely through CSS, no `tailwind.config.js`)
 - `src/db/schema.ts` — the battle-domain Drizzle schema (`users`, `rooms`, `room_members`, `battles`, `battle_participants`, `rounds`, `solves`, `phase_checkpoints`)
 - `src/db/index.ts` — the libsql client, WAL and foreign-key pragmas, and the Drizzle client
@@ -54,7 +56,19 @@ The app stores cuber identities, rooms, battles, rounds, solve times, and one ph
 
 Schema changes are made in `src/db/schema.ts` and become SQL migrations via `pnpm db:generate`; migrations in `drizzle/` are applied with `pnpm db:migrate`. The schema constraint tests (`pnpm test`) run against a fresh temporary database and apply the migrations programmatically. The local SQLite file (`local.db` and its WAL/SHM siblings) is gitignored.
 
-This schema is the durable layer the planned lobby (`add-lobby-api`) and realtime battle (`add-realtime-battles`) changes build on; those changes add logic only, no further DDL.
+The schema is the durable layer the lobby (`add-lobby-api`) and realtime battle (`add-realtime-battles`) changes build on; both add logic only, no further DDL.
+
+## Lobby flow
+
+With `pnpm dev` running, open <http://localhost:3000> and walk the lobby:
+
+1. **Create a room** — enter a display name and battle settings (event, rounds, inspection, ready timeout) in the create-room form. The first action issues a guest identity in an httpOnly cookie, so returning visitors are recognized without signing up. The host lands on the room page.
+2. **Share the invite code** — the room page shows a six-character code (readable aloud: no `0/o`, `1/l/i`). Send it to your friends.
+3. **Join by code** — friends enter the code (and a display name on first visit) in the join-by-code form and are redirected into the room. An unknown code shows an error inline; joining again is a no-op.
+4. **Configure** — the host alone sees the settings form; everyone else sees the current settings read-only. Invalid values are rejected naming the offending field.
+5. **Start** — the host clicks *Start battle*. The battle snapshots the room's settings, records every member as a participant, and generates all rounds with distinct WCA scrambles upfront. The room page then shows the active battle summary; a second start is refused while one battle is active.
+
+A started battle is rows only — the rounds do not run yet. The realtime battle runtime (phases, timing, solve submission) is the next change, `add-realtime-battles`.
 
 ## Adding a route
 
