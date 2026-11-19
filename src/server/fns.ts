@@ -4,9 +4,8 @@ import { z } from 'zod'
 
 import { db } from '../db/index'
 import { RoomSettingsSchema, defaultRoomSettings } from '../lib/room-settings'
-import { startBattle } from './battles'
 import { createGuestIdentity } from './identity'
-import { createRoom, getRoomState, joinRoom, updateRoomSettings } from './rooms'
+import { createRoom, getRoomState, joinRoom } from './rooms'
 import { getCurrentCuber, issueIdentityCookie } from './session'
 
 /**
@@ -49,11 +48,6 @@ const JoinRoomInputSchema = z.object({
 
 const RoomIdInputSchema = z.object({
   roomId: z.string().min(1, 'a room is required'),
-})
-
-const UpdateSettingsInputSchema = z.object({
-  roomId: z.string().min(1, 'a room is required'),
-  settings: RoomSettingsSchema,
 })
 
 /**
@@ -101,30 +95,10 @@ export const joinRoomFn = createServerFn({ method: 'POST' })
   .validator((input: unknown) => parseOrThrow(JoinRoomInputSchema, input))
   .handler(async ({ data }) => {
     const cuber = await resolveOrCreateCuber(data.displayName)
+    // Joining publishes nothing from here: the joiner has no channel yet, so
+    // the room announces them when their page connects (the open handler).
     const roomId = await joinRoom(db, cuber.id, data.inviteCode)
     return { roomId }
-  })
-
-export const updateRoomSettingsFn = createServerFn({ method: 'POST' })
-  .validator((input: unknown) => parseOrThrow(UpdateSettingsInputSchema, input))
-  .handler(async ({ data }) => {
-    const cuber = await getCurrentCuber(db)
-    if (!cuber) throw new Error('only the host can change room settings')
-    const settings = await updateRoomSettings(
-      db,
-      cuber.id,
-      data.roomId,
-      data.settings,
-    )
-    return { settings }
-  })
-
-export const startBattleFn = createServerFn({ method: 'POST' })
-  .validator((input: unknown) => parseOrThrow(RoomIdInputSchema, input))
-  .handler(async ({ data }) => {
-    const cuber = await getCurrentCuber(db)
-    if (!cuber) throw new Error('only the host can start a battle')
-    return startBattle(db, cuber.id, data.roomId)
   })
 
 /** Member-only room read; the rejection travels as a thrown loader error. */
@@ -134,5 +108,9 @@ export const getRoomStateFn = createServerFn({ method: 'GET' })
     const cuber = await getCurrentCuber(db)
     if (!cuber) throw new Error('you are not a member of this room')
     const state = await getRoomState(db, cuber.id, data.roomId)
-    return { ...state, isHost: cuber.id === state.host.userId }
+    return {
+      ...state,
+      isHost: cuber.id === state.host.userId,
+      currentUserId: cuber.id,
+    }
   })

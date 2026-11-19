@@ -155,26 +155,15 @@ export interface RoomState {
 }
 
 /**
- * Member-only read of a room's current state: invite code, host, members
- * with display names, settings, and the active battle if one exists.
- * Cubers outside the room are rejected.
+ * Read a room's current state without a membership check: invite code, host,
+ * members with display names, settings, and the active battle if one exists.
+ * This is the one canonical room read used by both the member-facing loader
+ * and the live-channel publisher (which has no acting cuber).
  */
-export async function getRoomState(
+export async function readRoomState(
   db: Database,
-  userId: string,
   roomId: string,
 ): Promise<RoomState> {
-  const membership = await db
-    .select({ roomId: roomMembers.roomId })
-    .from(roomMembers)
-    .where(
-      and(eq(roomMembers.roomId, roomId), eq(roomMembers.userId, userId)),
-    )
-    .limit(1)
-  if (membership.length === 0) {
-    throw new Error('you are not a member of this room')
-  }
-
   const room = await db.query.rooms.findFirst({
     where: eq(rooms.id, roomId),
     with: {
@@ -209,4 +198,26 @@ export async function getRoomState(
         }
       : null,
   }
+}
+
+/**
+ * Member-only read of a room's current state. Cubers outside the room are
+ * rejected; members get exactly what `readRoomState` returns.
+ */
+export async function getRoomState(
+  db: Database,
+  userId: string,
+  roomId: string,
+): Promise<RoomState> {
+  const membership = await db
+    .select({ roomId: roomMembers.roomId })
+    .from(roomMembers)
+    .where(
+      and(eq(roomMembers.roomId, roomId), eq(roomMembers.userId, userId)),
+    )
+    .limit(1)
+  if (membership.length === 0) {
+    throw new Error('you are not a member of this room')
+  }
+  return readRoomState(db, roomId)
 }
