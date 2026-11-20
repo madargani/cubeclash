@@ -5,9 +5,11 @@ import {
   useGameActions,
 } from "@/hooks/useGameStore";
 import { formatTime } from "@/lib/utils";
+import { clearRoomSession } from "@/lib/roomSession";
 import { Text } from "../retroui/Text";
 import { Table } from "../retroui/Table";
 import { Button } from "../retroui/Button";
+import { useNavigate } from "react-router";
 
 function formatSolves(rounds: (number | null)[]): string {
   const validTimes = rounds.filter((t): t is number => t != null && t > 0);
@@ -32,7 +34,8 @@ function Results() {
   const leaderboard = useLeaderboard();
   const scrambles = useScrambles();
   const nickname = useNickname();
-  const { setStage } = useGameActions();
+  const { resetRoom } = useGameActions();
+  const navigate = useNavigate();
 
   // Find current user's entry in leaderboard
   const currentUser = leaderboard.find((entry) => entry.name === nickname);
@@ -40,7 +43,11 @@ function Results() {
   // Get top 5 placers
   const top5 = leaderboard.slice(0, 5);
 
-  const handlePlayAgain = () => setStage("lobby");
+  const handleLeaveRoom = () => {
+    clearRoomSession();
+    resetRoom();
+    navigate("/");
+  };
 
   return (
     <main className="h-screen flex items-center justify-center">
@@ -115,8 +122,8 @@ function Results() {
           </div>
         )}
 
-        <Button className="self-end" onClick={handlePlayAgain}>
-          Play Again
+        <Button className="self-end" onClick={handleLeaveRoom}>
+          Leave Room
         </Button>
       </div>
     </main>

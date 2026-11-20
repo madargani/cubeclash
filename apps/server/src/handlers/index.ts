@@ -25,6 +25,6 @@ type CubeClashServer = Server<
 export function registerSocketHandlers(socket: CubeClashSocket, io: CubeClashServer) {
   console.log(`User connected: ${socket.id}`);
 
-  registerRoomHandlers(socket);
+  registerRoomHandlers(socket, io);
   registerGameHandlers(socket, io);
 }

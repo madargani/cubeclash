@@ -24,7 +24,7 @@ function useStackmat(
   // Time that inspection starts
   // Used for calculating inspection time left
   // Doesn't change
-  const inspectionStart = useRef<number>(performance.now() / 1000);
+  const [inspectionStart] = useState(() => performance.now() / 1000);
 
   // Time that solve starts
   // Used for calculating running time and final time
@@ -32,7 +32,7 @@ function useStackmat(
   const solveStart = useRef<number>(-1);
 
   // Final time
-  const finalTime = useRef<number>(-1);
+  const [finalTime, setFinalTime] = useState<number>(-1);
 
   // Used to cancel priming when hands aren't down long enough
   const timeoutIdRef = useRef<number>(-1);
@@ -42,33 +42,37 @@ function useStackmat(
 
   const handleHandsDown = useCallback(() => {
     switch (state) {
-      case "INSPECTING":
+      case "INSPECTING": {
         setState("PRIMING");
         timeoutIdRef.current = setTimeout(
           () => setState("READY"),
           primingTime * 1000,
         );
         break;
-      case "SOLVING":
+      }
+      case "SOLVING": {
         const now = performance.now() / 1000;
-        finalTime.current = now - solveStart.current;
+        setFinalTime(now - solveStart.current);
         setState("STOPPED");
         break;
+      }
     }
-  }, [inspectionTime, primingTime, state]);
+  }, [primingTime, state]);
 
   const handleHandsUp = useCallback(() => {
     switch (state) {
-      case "PRIMING":
+      case "PRIMING": {
         setState("INSPECTING");
         clearTimeout(timeoutIdRef.current);
         break;
-      case "READY":
+      }
+      case "READY": {
         solveStart.current = performance.now() / 1000;
         setState("SOLVING");
         break;
+      }
     }
-  }, [inspectionTime, primingTime, state]);
+  }, [state]);
 
   useEffect(() => {
     cancelAnimationFrame(requestIdRef.current);
@@ -79,9 +83,9 @@ function useStackmat(
       switch (state) {
         case "INSPECTING":
         case "PRIMING":
-        case "READY":
+        case "READY": {
           const inspectionTimeLeft =
-            inspectionTime - (now - inspectionStart.current);
+            inspectionTime - (now - inspectionStart);
 
           if (inspectionTimeLeft <= 0) {
             setState("STOPPED");
@@ -92,16 +96,18 @@ function useStackmat(
           const ceil = Math.ceil(inspectionTimeLeft);
           setDisplay(ceil.toString());
           break;
+        }
 
-        case "SOLVING":
+        case "SOLVING": {
           const runningTime = now - solveStart.current;
           setDisplay(runningTime.toFixed(2));
           break;
+        }
 
-        case "STOPPED":
-          const seconds = finalTime.current;
-          if (seconds > 0) setDisplay(seconds.toFixed(2));
+        case "STOPPED": {
+          if (finalTime > 0) setDisplay(finalTime.toFixed(2));
           return;
+        }
       }
 
       // Request again to loop
@@ -109,12 +115,12 @@ function useStackmat(
     }
 
     requestIdRef.current = requestAnimationFrame(step);
-  }, [state]);
+  }, [state, inspectionTime, inspectionStart, finalTime]);
 
   return {
     state,
     display,
-    finalTime: finalTime.current,
+    finalTime,
     handleHandsDown,
     handleHandsUp,
   };

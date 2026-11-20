@@ -11,11 +11,11 @@ function MemberList() {
         Speed Cubers
       </Text>
       <ul className="flex flex-row md:flex-col gap-4">
-        {members.map((nickname, index) => (
-          <li key={`User ${index}`} className="">
+        {members.map((member) => (
+          <li key={member.id} className={member.connected ? "" : "opacity-50"}>
             <Card className="p-4 flex flex-col md:flex-row items-center gap-4">
               <div className="size-8 border-3 rounded-lg"></div>
-              <Text className="flex-1">{nickname}</Text>
+              <Text className="flex-1">{member.nickname}</Text>
             </Card>
           </li>
         ))}

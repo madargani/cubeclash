@@ -1,27 +1,19 @@
-import {
-  useGameStore,
-  useLeaderboard,
-  useRoomId,
-  useCurrentRound,
-} from "@/hooks/useGameStore";
+import { useLeaderboard, useCurrentRound, useIsHost, useSettings } from "@/hooks/useGameStore";
 import { formatTime } from "@/lib/utils";
-import { useRoom } from "@/hooks/useRoom";
+import { useSocketActions } from "@/hooks/useSocketActions";
 import { Text } from "../retroui/Text";
 import { Table } from "../retroui/Table";
 import { Button } from "../retroui/Button";
 
 function Leaderboard() {
   const leaderboard = useLeaderboard();
-  const hostNickname = useGameStore((state) => state.hostNickname);
-  const roomId = useRoomId();
+  const isHost = useIsHost();
   const currentRound = useCurrentRound();
-  const { nextRound } = useRoom();
+  const settings = useSettings();
+  const { nextRound } = useSocketActions();
 
-  const handleNextRound = () => {
-    nextRound(roomId);
-  };
-
-  const buttonText = currentRound === 3 ? "Final Round" : "Next Round";
+  const buttonText =
+    currentRound === settings.rounds - 2 ? "Final Round" : "Next Round";
 
   return (
     <main className="h-screen flex items-center justify-center">
@@ -51,8 +43,8 @@ function Leaderboard() {
             ))}
           </Table.Body>
         </Table>
-        {hostNickname !== "" && currentRound < 4 && (
-          <Button className="self-end" onClick={handleNextRound}>
+        {isHost && currentRound < settings.rounds - 1 && (
+          <Button className="self-end" onClick={nextRound}>
             {buttonText}
           </Button>
         )}

@@ -4,11 +4,9 @@ import type {
   ServerToClientEvents,
   InterServerEvents,
   SocketData,
-  LeaderboardEntry,
 } from "@cubeclash/types";
 import {
   addResult,
-  areAllDone,
   canStartNextRound,
   getRoom,
   getCurrentRound,
@@ -16,7 +14,7 @@ import {
   startGame,
 } from "../rooms.js";
 import { generateScramble } from "../types/scramble.js";
-import type { Room } from "../types/index.ts";
+import { broadcastRoomState, deriveHostMemberId } from "../snapshot.js";
 
 type CubeClashSocket = Socket<
   ClientToServerEvents,
@@ -32,70 +30,19 @@ type CubeClashServer = Server<
   SocketData
 >;
 
-function calculateLeaderboard(room: Room): LeaderboardEntry[] {
-  const entries: LeaderboardEntry[] = [];
-
-  for (const member of room.members) {
-    const times = room.results.get(member.id) || [];
-    const rounds: (number | null)[] = [];
-
-    // Fill rounds with times or null
-    for (let i = 0; i < room.settings.rounds; i++) {
-      rounds.push(times[i] || null);
-    }
-
-    // Calculate average if all rounds done
-    let average = null;
-    if (times.length == room.settings.rounds) {
-      const validTimes = times.filter((x) => x > 0);
-      if (validTimes.length >= room.settings.rounds - 1) {
-        // Remove best and worst time
-        validTimes.sort();
-        if (validTimes.length == room.settings.rounds) validTimes.pop();
-        validTimes.shift();
-
-        average = validTimes.reduce((sum, x) => sum + x) / validTimes.length;
-      }
-    }
-
-    // Calculate best time
-    const validTimes = times.filter((x) => x > 0);
-    const best = validTimes.length > 0 ? Math.min(...validTimes) : null;
-
-    entries.push({
-      rank: 0, // Will be calculated after sorting
-      name: member.nickname,
-      rounds,
-      average,
-      best,
-    });
-  }
-
-  // Sort by average (null averages go to bottom)
-  entries.sort((a, b) => {
-    if (a.average === null && b.average === null) return 0;
-    if (a.average === null) return 1;
-    if (b.average === null) return -1;
-    return a.average - b.average;
-  });
-
-  // Assign ranks
-  entries.forEach((entry, index) => {
-    entry.rank = index + 1;
-  });
-
-  return entries;
-}
-
 export function registerGameHandlers(
   socket: CubeClashSocket,
   io: CubeClashServer,
 ) {
-  socket.on("start_game", async (roomId) => {
-    const room = getRoom(roomId);
+  socket.on("start_game", async () => {
+    const { roomId, memberId } = socket.data;
+    if (roomId === undefined || memberId === undefined) return;
 
+    const room = getRoom(roomId);
     if (!room) return;
-    if (room.hostId != socket.id) return;
+
+    // Only the effective host can start the game
+    if (deriveHostMemberId(room) !== memberId) return;
 
     // check if game already started
     if (room.scrambles.length > 0) return;
@@ -103,16 +50,21 @@ export function registerGameHandlers(
     startGame(room.id);
     const scramble = await generateScramble(room.settings.event);
     room.scrambles.push(scramble);
-    io.to(roomId).emit("start_round", scramble, 0);
+
+    broadcastRoomState(io, room);
 
     console.log(`Room ${roomId} started game`);
   });
 
-  socket.on("next_round", async (roomId) => {
-    const room = getRoom(roomId);
+  socket.on("next_round", async () => {
+    const { roomId, memberId } = socket.data;
+    if (roomId === undefined || memberId === undefined) return;
 
+    const room = getRoom(roomId);
     if (!room) return;
-    if (room.hostId != socket.id) return;
+
+    // Only the effective host can advance rounds
+    if (deriveHostMemberId(room) !== memberId) return;
 
     if (!canStartNextRound(roomId)) {
       console.log(
@@ -127,34 +79,25 @@ export function registerGameHandlers(
     const currentRound = getCurrentRound(roomId);
     const scramble = await generateScramble(room.settings.event);
     room.scrambles.push(scramble);
-    io.to(roomId).emit("start_round", scramble, currentRound);
+
+    broadcastRoomState(io, room);
 
     console.log(`Room ${roomId} started round ${currentRound + 1}`);
   });
 
-  socket.on("submit_solve", (roomId, time) => {
+  socket.on("submit_solve", (time) => {
+    const { roomId, memberId } = socket.data;
+    if (roomId === undefined || memberId === undefined) return;
+
     const room = getRoom(roomId);
     if (!room) return;
 
-    addResult(roomId, socket.id, time);
+    addResult(roomId, memberId, time);
 
     console.log(
-      `User ${socket.id} completed solve in ${time.toFixed(2)} seconds`,
+      `Member ${memberId} completed solve in ${time.toFixed(2)} seconds`,
     );
 
-    // If all solvers are done, post results
-    if (areAllDone(roomId)) {
-      const leaderboard = calculateLeaderboard(room);
-      const scrambles = room.scrambles;
-
-      // Check if this was the final round (round 4 = 5th round, 0-indexed)
-      if (room.round === 4) {
-        io.to(roomId).emit("game_over", leaderboard, scrambles);
-        console.log(`Room ${room.id} game over after round 5`);
-      } else {
-        io.to(roomId).emit("round_done", leaderboard);
-        console.log(`Room ${room.id} results for round ${room.round}:`);
-      }
-    }
+    broadcastRoomState(io, room);
   });
 }

@@ -4,11 +4,12 @@ export type { RoomSettings };
 export interface Member {
   id: string;
   nickname: string;
+  connected: boolean;
 }
 
 export interface Room {
   id: string;
-  hostId: string;
+  hostMemberId: string;
   members: Member[];
   round: number;
   results: Map<string, number[]>;

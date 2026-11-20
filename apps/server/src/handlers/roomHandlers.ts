@@ -1,19 +1,21 @@
-import type { Socket } from "socket.io";
+import type { Server, Socket } from "socket.io";
 import type {
   ClientToServerEvents,
   ServerToClientEvents,
   InterServerEvents,
   SocketData,
-  SocketCallbackResponse,
 } from "@cubeclash/types";
 import {
   addMember,
+  countConnected,
   createRoom,
   deleteRoom,
+  getMember,
   getRoom,
-  removeMember,
+  setMemberConnected,
   updateSettings,
 } from "../rooms.js";
+import { broadcastRoomState, deriveHostMemberId } from "../snapshot.js";
 
 type CubeClashSocket = Socket<
   ClientToServerEvents,
@@ -22,82 +24,135 @@ type CubeClashSocket = Socket<
   SocketData
 >;
 
-export function registerRoomHandlers(socket: CubeClashSocket) {
+type CubeClashServer = Server<
+  ClientToServerEvents,
+  ServerToClientEvents,
+  InterServerEvents,
+  SocketData
+>;
+
+export function registerRoomHandlers(
+  socket: CubeClashSocket,
+  io: CubeClashServer,
+) {
   socket.on("create_room", (nickname, callback) => {
-    const room = createRoom(socket.id, nickname);
+    const room = createRoom(nickname);
+    const memberId = room.hostMemberId;
 
     socket.join(room.id);
-    callback({ status: "success", data: room.id });
+    socket.data = { roomId: room.id, memberId };
+    callback({ status: "success", data: { roomId: room.id, memberId } });
 
-    console.log(`User ${socket.id} created room ${room.id}`);
+    broadcastRoomState(io, room);
+
+    console.log(`Member ${memberId} created room ${room.id}`);
   });
 
   socket.on("join_room", (nickname, roomId, callback) => {
-    const room = getRoom(roomId);
+    // A socket binds to at most one room (design D4)
+    if (socket.data.roomId !== undefined) {
+      callback({ status: "error", message: "Already in a room" });
+      return;
+    }
 
+    const room = getRoom(roomId);
     if (!room) {
       callback({ status: "error", message: "Room not found" });
       return;
     }
 
-    // nickname is already used
+    // nickname is already used - checked against all members, connected or not
     if (room.members.some((member) => member.nickname === nickname)) {
       callback({ status: "error", message: "Username already taken" });
       return;
     }
 
+    const member = addMember(roomId, nickname);
+    if (!member) {
+      callback({ status: "error", message: "Room not found" });
+      return;
+    }
+
+    // Mid-round joins spectate the current round: initialize the results
+    // row to round + 1 nulls so the joiner counts as done for it (design D5)
+    if (room.round >= 0) {
+      room.results.set(member.id, new Array(room.round + 1).fill(null));
+    }
+
     socket.join(roomId);
-    addMember(roomId, socket.id, nickname);
+    socket.data = { roomId, memberId: member.id };
+    callback({ status: "success", data: { memberId: member.id } });
 
-    const members = room.members.map((member) => member.nickname);
-    callback({ status: "success", data: members });
+    broadcastRoomState(io, room);
 
-    socket.to(roomId).emit("member_joined", nickname);
-
-    console.log(`User ${socket.id} joined room ${roomId}`);
+    console.log(`Member ${member.id} joined room ${roomId}`);
   });
 
-  socket.on("update_settings", (roomId, settings) => {
+  socket.on("rejoin_room", (roomId, memberId, callback) => {
     const room = getRoom(roomId);
+    if (!room) {
+      callback({ status: "error", message: "Room not found" });
+      return;
+    }
 
+    const member = getMember(roomId, memberId);
+    if (!member) {
+      callback({ status: "error", message: "Member not found" });
+      return;
+    }
+
+    if (member.connected) {
+      callback({ status: "error", message: "Already connected" });
+      return;
+    }
+
+    socket.join(roomId);
+    socket.data = { roomId, memberId };
+    setMemberConnected(roomId, memberId, true);
+    callback({ status: "success", data: null });
+
+    broadcastRoomState(io, room);
+
+    console.log(`Member ${memberId} rejoined room ${roomId}`);
+  });
+
+  socket.on("update_settings", (settings) => {
+    const { roomId, memberId } = socket.data;
+    if (roomId === undefined || memberId === undefined) return;
+
+    const room = getRoom(roomId);
     if (!room) return;
 
-    // Only host can change settings
-    if (room.hostId !== socket.id) return;
+    // Only the effective host can change settings
+    if (deriveHostMemberId(room) !== memberId) return;
 
     const success = updateSettings(roomId, settings);
     if (!success) return;
 
-    // Broadcast to all including sender
-    socket.nsp.in(roomId).emit("settings_changed", settings);
+    broadcastRoomState(io, room);
 
-    console.log(`Settings updated in room ${roomId} by ${socket.id}`);
+    console.log(`Settings updated in room ${roomId} by member ${memberId}`);
   });
 
   socket.on("disconnecting", () => {
-    for (const roomId of socket.rooms) {
-      // Skip the room matching socket.id (socket.io internal room)
-      if (roomId === socket.id) continue;
-
+    const { roomId, memberId } = socket.data;
+    if (roomId !== undefined && memberId !== undefined) {
       const room = getRoom(roomId);
-      if (!room) continue;
 
-      if (room.hostId == socket.id) {
-        deleteRoom(roomId);
-        socket.nsp.in(roomId).disconnectSockets(true);
-        console.log(`Room ${roomId} deleted`);
-      } else {
-        // Get member's nickname before removing
-        const member = room.members.find((m) => m.id === socket.id);
-        const nickname = member?.nickname;
+      if (room) {
+        // Mark the member disconnected rather than removing them (design D6)
+        setMemberConnected(roomId, memberId, false);
 
-        if (nickname) {
-          removeMember(roomId, socket.id);
-          socket.to(roomId).emit("member_left", nickname);
-          console.log(
-            `User ${socket.id} left room ${roomId} (nickname: ${nickname})`,
-          );
+        if (countConnected(roomId) === 0) {
+          deleteRoom(roomId);
+          console.log(`Room ${roomId} deleted`);
+        } else {
+          broadcastRoomState(io, room);
         }
+
+        console.log(
+          `Member ${memberId} disconnected from room ${roomId}`,
+        );
       }
     }
 

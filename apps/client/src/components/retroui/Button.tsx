@@ -5,6 +5,7 @@ import React from "react";
 import type { ButtonHTMLAttributes } from "react";
 import { Slot } from "@radix-ui/react-slot";
 
+// eslint-disable-next-line react-refresh/only-export-components -- variants are consumed by other components
 export const buttonVariants = cva(
   "font-head transition-all rounded outline-hidden cursor-pointer duration-200 font-medium flex items-center",
   {

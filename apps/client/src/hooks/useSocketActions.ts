@@ -6,7 +6,9 @@ export function useSocketActions() {
   const createRoom = useCallback(
     (
       nickname: string,
-      callback: (response: SocketCallbackResponse<string>) => void,
+      callback: (
+        response: SocketCallbackResponse<{ roomId: string; memberId: string }>,
+      ) => void,
     ) => {
       socket.emit("create_room", nickname, callback);
     },
@@ -17,35 +19,49 @@ export function useSocketActions() {
     (
       nickname: string,
       roomId: string,
-      callback: (response: SocketCallbackResponse<string[]>) => void,
+      callback: (
+        response: SocketCallbackResponse<{ memberId: string }>,
+      ) => void,
     ) => {
       socket.emit("join_room", nickname, roomId, callback);
     },
     [],
   );
 
-  const startGame = useCallback((roomId: string) => {
-    socket.emit("start_game", roomId);
+  const rejoinRoom = useCallback(
+    (
+      roomId: string,
+      memberId: string,
+      callback: (response: SocketCallbackResponse<null>) => void,
+    ) => {
+      socket.emit("rejoin_room", roomId, memberId, callback);
+    },
+    [],
+  );
+
+  const startGame = useCallback(() => {
+    socket.emit("start_game");
   }, []);
 
-  const updateSettings = useCallback((roomId: string, settings: RoomSettings) => {
-    socket.emit("update_settings", roomId, settings);
+  const nextRound = useCallback(() => {
+    socket.emit("next_round");
   }, []);
 
-  const nextRound = useCallback((roomId: string) => {
-    socket.emit("next_round", roomId);
+  const submitSolve = useCallback((time: number) => {
+    socket.emit("submit_solve", time);
   }, []);
 
-  const submitSolve = useCallback((roomId: string, time: number) => {
-    socket.emit("submit_solve", roomId, time);
+  const updateSettings = useCallback((settings: RoomSettings) => {
+    socket.emit("update_settings", settings);
   }, []);
 
   return {
     createRoom,
     joinRoom,
+    rejoinRoom,
     startGame,
-    updateSettings,
     nextRound,
     submitSolve,
+    updateSettings,
   };
 }

@@ -1,18 +1,13 @@
 import MemberList from "@/components/lobby/MemberList";
 import Settings from "@/components/lobby/Settings";
-import { useGameStore, useRoomId } from "@/hooks/useGameStore";
-import { useRoom } from "@/hooks/useRoom";
+import { useIsHost } from "@/hooks/useGameStore";
+import { useSocketActions } from "@/hooks/useSocketActions";
 import { Text } from "@/components/retroui/Text";
 import { Button } from "../retroui/Button";
 
 function Lobby() {
-  const roomId = useRoomId();
-  const hostNickname = useGameStore((state) => state.hostNickname);
-  const { startGame } = useRoom();
-
-  const handleStart = () => {
-    startGame(roomId);
-  };
+  const isHost = useIsHost();
+  const { startGame } = useSocketActions();
 
   return (
     <main className="h-screen flex justify-center">
@@ -25,8 +20,8 @@ function Lobby() {
           <MemberList />
           <Settings />
         </div>
-        {hostNickname !== "" && (
-          <Button onClick={handleStart} className="self-end">
+        {isHost && (
+          <Button onClick={startGame} className="self-end">
             Start
           </Button>
         )}

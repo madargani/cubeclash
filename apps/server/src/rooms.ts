@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { Member, Room, RoomSettings } from "./types/index.ts";
 import { DEFAULT_ROOM_SETTINGS } from "@cubeclash/types";
 
@@ -14,20 +15,21 @@ function generateRoomId(): string {
   return id;
 }
 
-export function createRoom(hostId: string, hostNickname: string): Room {
+export function createRoom(hostNickname: string): Room {
   let id: string;
   do {
     id = generateRoomId();
   } while (rooms.has(id));
 
   const host: Member = {
-    id: hostId,
+    id: randomUUID(),
     nickname: hostNickname,
+    connected: true,
   };
 
   const room: Room = {
     id,
-    hostId,
+    hostMemberId: host.id,
     members: [host],
     round: -1,
     results: new Map(),
@@ -54,35 +56,48 @@ export function roomExists(roomId: string): boolean {
 
 export function addMember(
   roomId: string,
-  memberId: string,
   nickname: string,
+): Member | undefined {
+  const room = rooms.get(roomId);
+  if (!room) return undefined;
+
+  const member: Member = {
+    id: randomUUID(),
+    nickname,
+    connected: true,
+  };
+
+  room.members.push(member);
+
+  return member;
+}
+
+export function setMemberConnected(
+  roomId: string,
+  memberId: string,
+  connected: boolean,
 ): void {
   const room = rooms.get(roomId);
   if (!room) return;
 
-  const member: Member = {
-    id: memberId,
-    nickname,
-  };
+  const member = room.members.find((m) => m.id === memberId);
+  if (!member) return;
 
-  room.members.push(member);
+  member.connected = connected;
 }
 
-export function removeMember(
-  roomId: string,
-  memberId: string,
-): string | undefined {
+export function getMember(roomId: string, memberId: string): Member | undefined {
   const room = rooms.get(roomId);
   if (!room) return undefined;
 
-  for (let i = 0; i < room.members.length; i++) {
-    if (room.members[i]?.id == memberId) {
-      const removedNickname = room.members[i]?.nickname;
-      room.members.splice(i, 1);
-      return removedNickname;
-    }
-  }
-  return undefined;
+  return room.members.find((m) => m.id === memberId);
+}
+
+export function countConnected(roomId: string): number {
+  const room = rooms.get(roomId);
+  if (!room) return 0;
+
+  return room.members.filter((m) => m.connected).length;
 }
 
 export function startGame(roomId: string): void {
@@ -115,8 +130,14 @@ export function areAllDone(roomId: string): boolean {
   const room = rooms.get(roomId);
   if (!room) return false;
 
-  for (const memberRecords of room.results.values())
+  // Only connected members count toward round completion (design D2)
+  for (const member of room.members) {
+    if (!member.connected) continue;
+
+    const memberRecords = room.results.get(member.id);
+    if (memberRecords === undefined) return false;
     if (memberRecords.length <= room.round) return false;
+  }
 
   return true;
 }
@@ -130,13 +151,13 @@ export function getCurrentRound(roomId: string): number {
 export function canStartNextRound(roomId: string): boolean {
   const room = rooms.get(roomId);
   if (!room) return false;
-  return room.round < 4; // Rounds 0-4 = 5 rounds total
+  return room.round < room.settings.rounds - 1;
 }
 
 export function incrementRound(roomId: string): boolean {
   const room = rooms.get(roomId);
   if (!room) return false;
-  if (room.round >= 4) return false;
+  if (room.round >= room.settings.rounds - 1) return false;
   room.round += 1;
   return true;
 }

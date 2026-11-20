@@ -3,27 +3,28 @@ import Results from "@/components/views/Results";
 import Leaderboard from "@/components/views/Leaderboard";
 import Lobby from "@/components/views/Lobby";
 import Timer from "@/components/views/Timer";
-import { useGameStore, useRoomId } from "@/hooks/useGameStore";
+import { useRoomSnapshot } from "@/hooks/useGameStore";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 function RoomContainer() {
-  const roomId = useRoomId();
+  const room = useRoomSnapshot();
   const navigate = useNavigate();
-  const stage = useGameStore((state) => state.stage);
 
   useEffect(() => {
-    if (!roomId) navigate("/");
-  }, [navigate]);
+    if (!room) navigate("/");
+  }, [room, navigate]);
 
-  switch (stage) {
+  if (!room) return null;
+
+  switch (room.phase) {
     case "lobby":
       return <Lobby />;
-    case "timer":
+    case "solving":
       return <Timer />;
-    case "leaderboard":
+    case "round_done":
       return <Leaderboard />;
-    case "results":
+    case "game_over":
       return <Results />;
   }
 }

@@ -37,7 +37,7 @@ function Settings() {
             <Select
               value={settings.event}
               onValueChange={(value) =>
-                updateSettings(roomId, {
+                updateSettings({
                   ...settings,
                   event: value as RoomEvent,
                 })
@@ -66,7 +66,7 @@ function Settings() {
             <Select
               value={String(settings.rounds)}
               onValueChange={(value) =>
-                updateSettings(roomId, {
+                updateSettings({
                   ...settings,
                   rounds: Number(value) as RoundOption,
                 })
@@ -96,7 +96,7 @@ function Settings() {
               type="number"
               value={settings.inspectionTime}
               onChange={(e) =>
-                updateSettings(roomId, {
+                updateSettings({
                   ...settings,
                   inspectionTime: Number(e.target.value),
                 })

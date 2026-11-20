@@ -12,35 +12,60 @@ export interface LeaderboardEntry {
   best: number | null;
 }
 
+// Room Snapshot Types
+export type RoomPhase = "lobby" | "solving" | "round_done" | "game_over";
+
+export interface RoomMemberView {
+  id: string;
+  nickname: string;
+  connected: boolean;
+}
+
+export interface RoomSnapshot {
+  roomId: string;
+  hostMemberId: string;
+  phase: RoomPhase;
+  round: number;
+  settings: RoomSettings;
+  scrambles: string[];
+  members: RoomMemberView[];
+  leaderboard: LeaderboardEntry[];
+}
+
 // Socket.io Types
 export interface ServerToClientEvents {
-  member_joined: (nickname: string) => void;
-  member_left: (nickname: string) => void;
-  start_round: (scramble: string, round: number) => void;
-  round_done: (leaderboard: LeaderboardEntry[]) => void;
-  game_over: (leaderboard: LeaderboardEntry[], scrambles: string[]) => void;
-  settings_changed: (settings: RoomSettings) => void;
+  room_state: (snapshot: RoomSnapshot) => void;
 }
 
 export interface ClientToServerEvents {
   create_room: (
     nickname: string,
-    callback: (response: SocketCallbackResponse<string>) => void,
+    callback: (
+      response: SocketCallbackResponse<{ roomId: string; memberId: string }>,
+    ) => void,
   ) => void;
   join_room: (
     nickname: string,
     roomId: string,
-    callback: (response: SocketCallbackResponse<string[]>) => void,
+    callback: (response: SocketCallbackResponse<{ memberId: string }>) => void,
   ) => void;
-  start_game: (roomId: string) => void;
-  next_round: (roomId: string) => void;
-  submit_solve: (roomId: string, time: number) => void;
-  update_settings: (roomId: string, settings: RoomSettings) => void;
+  start_game: () => void;
+  next_round: () => void;
+  submit_solve: (time: number) => void;
+  update_settings: (settings: RoomSettings) => void;
+  rejoin_room: (
+    roomId: string,
+    memberId: string,
+    callback: (response: SocketCallbackResponse<null>) => void,
+  ) => void;
 }
 
 export interface InterServerEvents {}
 
-export interface SocketData {}
+export interface SocketData {
+  roomId?: string;
+  memberId?: string;
+}
 
 // Room Settings
 

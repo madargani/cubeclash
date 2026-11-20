@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "../retroui/Button";
 import { Dialog } from "../retroui/Dialog";
 import { Input } from "../retroui/Input";
@@ -5,18 +6,13 @@ import { Text } from "../retroui/Text";
 import { useHomeActions } from "@/hooks/useHomeActions";
 import { useRandomUsername } from "@/hooks/useRandomUsername";
 import { Label } from "../retroui/Label";
-import {
-  useGameActions,
-  useNickname,
-  useRoomId,
-  useHomeError,
-} from "@/hooks/useGameStore";
+import { useGameActions, useNickname, useHomeError } from "@/hooks/useGameStore";
 
 function JoinRoomButton() {
   const nickname = useNickname();
-  const roomId = useRoomId();
+  const [roomId, setRoomId] = useState("");
   const homeError = useHomeError();
-  const { setNickname, setRoomId } = useGameActions();
+  const { setNickname } = useGameActions();
   const { handleJoinRoom } = useHomeActions();
   const randomPlaceholder = useRandomUsername();
 
@@ -55,7 +51,9 @@ function JoinRoomButton() {
           )}
         </div>
         <Dialog.Footer>
-          <Button onClick={() => handleJoinRoom(randomPlaceholder)}>Join</Button>
+          <Button onClick={() => handleJoinRoom(randomPlaceholder, roomId)}>
+            Join
+          </Button>
         </Dialog.Footer>
       </Dialog.Content>
     </Dialog>

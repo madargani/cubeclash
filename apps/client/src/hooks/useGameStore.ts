@@ -1,68 +1,35 @@
 import { create } from "zustand";
-import { DEFAULT_ROOM_SETTINGS, type LeaderboardEntry, type RoomSettings } from "@cubeclash/types";
+import {
+  DEFAULT_ROOM_SETTINGS,
+  type RoomSnapshot,
+  type RoomSettings,
+} from "@cubeclash/types";
 
 interface GameState {
+  room: RoomSnapshot | null;
   nickname: string;
-  hostNickname: string;
-  roomId: string;
-  members: string[];
   homeError: string | null;
-  stage: "lobby" | "timer" | "leaderboard" | "results";
-  scrambles: string[];
-  leaderboard: LeaderboardEntry[];
-  currentRound: number;
-  settings: RoomSettings;
+  memberId: string;
   actions: {
+    setRoom: (room: RoomSnapshot) => void;
     setNickname: (nickname: string) => void;
-    setHostNickname: (hostNickname: string) => void;
-    setRoomId: (roomId: string) => void;
-    setMembers: (members: string[]) => void;
-    addMember: (nickname: string) => void;
-    removeMember: (nickname: string) => void;
     setHomeError: (error: string | null) => void;
-    setStage: (stage: "lobby" | "timer" | "leaderboard" | "results") => void;
-    addScramble: (scramble: string) => void;
-    setLeaderboard: (leaderboard: LeaderboardEntry[]) => void;
-    setCurrentRound: (round: number) => void;
-    setSettings: (settings: RoomSettings) => void;
-    clearScrambles: () => void;
-    setScrambles: (scrambles: string[]) => void;
+    setMemberId: (memberId: string) => void;
+    resetRoom: () => void;
   };
 }
 
 export const useGameStore = create<GameState>()((set) => ({
+  room: null,
   nickname: "",
-  hostNickname: "",
-  roomId: "",
-  members: [],
   homeError: null,
-  stage: "lobby",
-  scrambles: [],
-  leaderboard: [],
-  currentRound: -1,
-  settings: DEFAULT_ROOM_SETTINGS,
+  memberId: "",
   actions: {
-    setNickname: (nickname) => set((_state) => ({ nickname: nickname })),
-    setHostNickname: (hostNickname) =>
-      set((_state) => ({ hostNickname: hostNickname })),
-    setRoomId: (roomId) => set((_state) => ({ roomId: roomId })),
-    setMembers: (members) => set((_state) => ({ members: members })),
-    addMember: (nickname) =>
-      set((state) => ({ members: [...state.members, nickname] })),
-    removeMember: (nickname) =>
-      set((state) => ({
-        members: state.members.filter((m) => m !== nickname),
-      })),
-    setHomeError: (homeError) => set((_state) => ({ homeError })),
-    setStage: (stage) => set((_state) => ({ stage: stage })),
-    addScramble: (scramble) =>
-      set((state) => ({ scrambles: [...state.scrambles, scramble] })),
-    setLeaderboard: (leaderboard) =>
-      set((_state) => ({ leaderboard: leaderboard })),
-    setCurrentRound: (round) => set((_state) => ({ currentRound: round })),
-    clearScrambles: () => set((_state) => ({ scrambles: [] })),
-    setScrambles: (scrambles) => set((_state) => ({ scrambles })),
-    setSettings: (settings) => set((_state) => ({ settings })),
+    setRoom: (room) => set({ room }),
+    setNickname: (nickname) => set({ nickname }),
+    setHomeError: (homeError) => set({ homeError }),
+    setMemberId: (memberId) => set({ memberId }),
+    resetRoom: () => set({ room: null }),
   },
 }));
 
@@ -70,49 +37,64 @@ export function useNickname() {
   return useGameStore((state) => state.nickname);
 }
 
-export function useIsHost() {
-  const hostNickname = useGameStore((state) => state.hostNickname);
-  return hostNickname !== "";
-}
-
-export function useRoomId() {
-  return useGameStore((state) => state.roomId);
-}
-
-export function useMembers() {
-  return useGameStore((state) => state.members);
-}
-
-export function useGameState() {
-  return useGameStore((state) => state.stage);
-}
-
-export function useScrambles() {
-  return useGameStore((state) => state.scrambles);
-}
-
-export function useCurrentScramble() {
-  const scrambles = useGameStore((state) => state.scrambles);
-  const currentRound = useGameStore((state) => state.currentRound);
-  return scrambles[currentRound] || "";
-}
-
-export function useLeaderboard() {
-  return useGameStore((state) => state.leaderboard);
-}
-
-export function useGameActions() {
-  return useGameStore((state) => state.actions);
-}
-
-export function useCurrentRound() {
-  return useGameStore((state) => state.currentRound);
-}
-
 export function useHomeError() {
   return useGameStore((state) => state.homeError);
 }
 
+export function useRoomSnapshot() {
+  return useGameStore((state) => state.room);
+}
+
+export function useRoomId() {
+  return useGameStore((state) => state.room?.roomId ?? "");
+}
+
+export function useRoomPhase() {
+  return useGameStore((state) => state.room?.phase ?? "lobby");
+}
+
+export function useLeaderboard() {
+  return useGameStore((state) => state.room?.leaderboard ?? []);
+}
+
+export function useScrambles() {
+  return useGameStore((state) => state.room?.scrambles ?? []);
+}
+
 export function useSettings() {
-  return useGameStore((state) => state.settings);
+  return useGameStore(
+    (state) => state.room?.settings ?? (DEFAULT_ROOM_SETTINGS as RoomSettings),
+  );
+}
+
+export function useMembers() {
+  return useGameStore((state) => state.room?.members ?? []);
+}
+
+export function useIsHost() {
+  return useGameStore(
+    (state) =>
+      state.room !== null &&
+      state.memberId !== "" &&
+      state.room.hostMemberId === state.memberId,
+  );
+}
+
+export function useCurrentRound() {
+  return useGameStore((state) => state.room?.round ?? -1);
+}
+
+export function useCurrentScramble() {
+  return useGameStore((state) => {
+    const room = state.room;
+    return room ? (room.scrambles[room.round] ?? "") : "";
+  });
+}
+
+export function useMemberId() {
+  return useGameStore((state) => state.memberId);
+}
+
+export function useGameActions() {
+  return useGameStore((state) => state.actions);
 }
