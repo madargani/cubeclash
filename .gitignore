@@ -6,7 +6,3 @@ node_modules/
 
 # tsc
 dist/
-
-# oh-my-opencode
-.sisyphus/
-.opencode/
